@@ -55,7 +55,7 @@ jobs:
           username: stuckinabox
           password: ${{ secrets.DOCKER_REGISTRY_PASSWORD }}
       - name: Build and push
-        uses: docker/build-push-action@v5
+        uses: docker/build-push-action@v6
         with:
           push: true
           tags: stuckinabox/rehearsal-manager:latest
