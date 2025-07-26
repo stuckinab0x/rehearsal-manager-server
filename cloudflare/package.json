@@ -1,0 +1,17 @@
+{
+	"name": "rehearsal-manager-worker",
+	"version": "0.0.0",
+	"private": true,
+	"scripts": {
+		"deploy": "wrangler deploy",
+		"dev": "wrangler dev",
+		"start": "wrangler dev",
+		"cf-typegen": "wrangler types",
+		"init-db": "wrangler d1 execute rehearsal-manager-database --local --file=./schema.sql"
+	},
+	"devDependencies": {
+		"typescript": "^5.8.3",
+		"wrangler": "^4.25.0"
+	},
+	"dependencies": {}
+}

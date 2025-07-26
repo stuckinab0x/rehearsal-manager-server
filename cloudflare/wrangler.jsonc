@@ -1,0 +1,15 @@
+{
+	"name": "rehearsal-manager-worker",
+	"main": "src/index.ts",
+	"compatibility_date": "2025-07-19",
+	"observability": {
+		"enabled": true
+	},
+	"d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "rehearsal-manager-database",
+      "database_id": "a6cc5d1e-a9d6-4c07-b72a-91cdedf1c5da"
+    }
+  ]
+}
