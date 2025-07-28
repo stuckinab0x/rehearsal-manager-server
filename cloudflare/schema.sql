@@ -56,7 +56,7 @@ VALUES (1, 'Lil Slugger', 'Drums', '[]', '', 1);
 DROP TABLE IF EXISTS rehearsals;
 CREATE TABLE rehearsals (
   id INTEGER PRIMARY KEY,
-  date TEXT,
+  date TEXT NOT NULL UNIQUE,
   absent TEXT,
   were_run TEXT,
   todolist TEXT,
