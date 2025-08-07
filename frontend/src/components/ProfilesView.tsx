@@ -2,19 +2,24 @@ import { FC, useState, useEffect } from 'react';
 import styled from 'styled-components';
 import { useProfile } from '../contexts/profile-context';
 
+interface Profile {
+  id: number;
+  name: string;
+}
+
 const ProfilesView: FC = () => {
-  const { profile, setProfileRequest } = useProfile();
+  const { setProfileAndReload, newProfileRequest } = useProfile();
 
   const [input, setInput] = useState('');
   const [creatingNew, setCreatingNew] = useState(false);
-  const [profiles, setProfiles] = useState<string[] | undefined>(undefined);
+  const [profiles, setProfiles] = useState<Profile[] | undefined>(undefined);
 
   useEffect(() => {
     const requestProfiles = async () => {
       try {
         const res = await fetch('/api/profiles');
-        const profiles: string[] = await res.json();
-          setProfiles(profiles);
+        const profiles: { id: string, name: string }[] = await res.json();
+        setProfiles(profiles.map(x => ({ ...x, id: parseInt(x.id) })));
       } catch (error) {
         console.log(error);
       }
@@ -32,10 +37,10 @@ const ProfilesView: FC = () => {
   return (
     <ViewMain>
       { !creatingNew && <>
-        <h2>{ profile ? 'Existing profiles' : 'No Profiles Found' }</h2>
+        <h2>{ profiles.length ? 'Existing profiles' : 'No Profiles Found' }</h2>
         { profiles.length > 0 && profiles.map(x => 
-        <Button key={ x } onClick={ () => setProfileRequest(x) }>
-          <h2>{ x }</h2>
+        <Button key={ x.id } onClick={ () => setProfileAndReload(x) }>
+          <h2>{ x.name }</h2>
         </Button>
       )}
         <Divider />
@@ -48,7 +53,7 @@ const ProfilesView: FC = () => {
       && <>
         <h2>New Profile:</h2>
         <NameInput value={ input } onChange={ event => setInput(event.currentTarget.value) } placeholder='enter profile name' />
-        <Button onClick={ () => setProfileRequest(input) } $disabled={ !input }>
+        <Button onClick={ () => newProfileRequest(input) } $disabled={ !input }>
           <h2>Create</h2>
         </Button>
       </>

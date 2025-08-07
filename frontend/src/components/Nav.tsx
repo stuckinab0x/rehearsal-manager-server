@@ -24,7 +24,7 @@ const Nav: FC = () => {
         </SaveButton>
         }
       </div>
-      { profile && <ProfileName onClick={ () => setEditorView('profiles') }>Profile: { profile }</ProfileName> }
+      { profile && <ProfileName onClick={ () => setEditorView('profiles') }>Profile: { profile.name }</ProfileName> }
     </NavMain>
     )
 }

@@ -1,4 +1,5 @@
 export default interface Student {
+  id: number;
   name: string;
   main: MainInstrument;
   castings: Casting[];
@@ -6,7 +7,7 @@ export default interface Student {
 }
 
 export interface Casting {
-  songId: string;
+  songId: number;
   inst: CastingInst;
 }
 

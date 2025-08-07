@@ -1,20 +1,9 @@
-export interface ShowData {
+export interface Show {
   id: number;
   name: string;
-  singleArtist: boolean;
-  twoPmRehearsal: boolean;
-  setSplitIndex: number;
-  songs: Song[];
-  cast: Student[];
-}
-
-export interface ShowNameAndId {
-  id: string;
-  name: string;
-}
-
-export default interface Show extends ShowData {
-  rehearsals: Rehearsal[];
+  single_artist: number;
+  two_pm_rehearsal: number;
+  set_split_index: number;
 }
 
 export interface Song {
@@ -24,26 +13,18 @@ export interface Song {
   color: string;
 }
 
-interface Casting {
-  songName: string;
-  inst: string;
-}
-
 export interface Student {
+  id: number;
   name: string;
   main: string;
-  castings: Casting[]
+  castings: string;
   lesson: string;
 }
 
 export interface Rehearsal {
+  id: number;
   date: string;
-  absent: Absence[];
-  wereRun: string[];
-  todoList: string[];
-}
-
-interface Absence {
-  studentName: string;
-  status: string;
+  absent: string;
+  were_run: string;
+  todo_list: string;
 }

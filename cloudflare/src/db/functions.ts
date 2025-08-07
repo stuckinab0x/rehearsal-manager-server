@@ -1,42 +1,15 @@
-import ProfileSummary from "../models/profile-summary";
-import Show, { Rehearsal, ShowData, Song, Student } from "../models/show-data";
+import ProfileSummary from '../models/profile-summary';
+import { Show, Rehearsal, Song, Student } from '../models/show-data';
 
-export const getCurrentProfileShowNames = async (db: D1Database): Promise<string[]> => {
-  const configResult = await db.prepare("SELECT current_profile FROM config WHERE id = 1").run<{ current_profile: number }>();
-  const currentProfile = configResult.results[0].current_profile;
+export const getProfileShowIDsAndNames = async (db: D1Database, profileID: number): Promise<{ id: number, name: string; }[]> => {
 
   const showsResult = await db.prepare(
-    "SELECT name FROM shows WHERE profile_id = ?"
-  ).bind(currentProfile).run<{ name: string; }>();
-  return showsResult.results.map(x => x.name);
+    "SELECT id, name FROM shows WHERE profile_id = ?"
+  ).bind(profileID).run<{ id: number, name: string; }>();
+  return showsResult.results;
 }
 
-export const getShow = async (db: D1Database, showId: number): Promise<Show> => {
-  const showsResult = await db.prepare(
-    "SELECT id, name, single_artist, two_pm_rehearsal, set_split_index FROM shows WHERE id = ?"
-  ).bind(showId).run<{ id: number; name: string; single_artist: number; two_pm_rehearsal: number; set_split_index: number }>();
-
-  const { id, name, single_artist, two_pm_rehearsal, set_split_index } = showsResult.results[0];
-
-  const songsResult = await db.prepare(
-    "SELECT id, name, artist FROM songs WHERE show_id = ?"
-  ).bind(showId).run<{ id: number; name: string; artist: string; }>();
-  const songs: Song[] = songsResult.results.map(x => ({ ...x, color: '' }));
-
-  const studentsResult = await db.prepare(
-    "SELECT id, name, main, castings, lesson FROM students WHERE show_id = ?"
-  ).bind(showId).run<Student>();
-  const students: Student[] = studentsResult.results.map(x => ({ ...x }));
-
-  const rehearsalsResult = await db.prepare(
-    "SELECT id, date, absent, were_run, todolist FROM rehearsals WHERE show_id = ?"
-  ).bind(showId).run<Rehearsal>();
-  const rehearsals = rehearsalsResult.results;
-
-  return { id, name, singleArtist: single_artist === 1, twoPmRehearsal: two_pm_rehearsal === 1, setSplitIndex: set_split_index, songs, cast: students, rehearsals };
-};
-
-export const addShow = async (db: D1Database, show: ShowData): Promise<void> => {
+export const addShow = async (db: D1Database, show: Show): Promise<void> => {
   const currentProfileIDResult = await db.prepare("SELECT current_profile FROM config WHERE id = 1").run<{ current_profile: number; }>();
   const currentProfileID = currentProfileIDResult.results[0].current_profile;
 
@@ -67,7 +40,7 @@ export const addShow = async (db: D1Database, show: ShowData): Promise<void> => 
   await db.batch([...castStatements, ...songStatements]);
 };
 
-export const setShow = async (db: D1Database, show: ShowData, showId: number): Promise<void> => {
+export const setShow = async (db: D1Database, show: Show, showId: number): Promise<void> => {
   const currentProfileIDResult = await db.prepare("SELECT current_profile FROM config WHERE id = 1").run<{ current_profile: number; }>();
   const currentProfileID = currentProfileIDResult.results[0].current_profile;
   await db.prepare(
@@ -101,6 +74,14 @@ export const setRehearsals = async (db: D1Database, rehearsals: Rehearsal[], sho
 
 // Profile methods
 
+export const getCurrentProfile = async (db: D1Database): Promise<string> => {
+  const currentProfileResult = await db.prepare(
+    'SELECT current_profile FROM config WHERE id = 1'
+  ).run<{ current_profile: string }>();
+  return currentProfileResult.results[0].current_profile;
+}
+
+//this is for the app only
 export const getAllProfileShows = async (db: D1Database, profileId: number): Promise<Show[]> => {
   const showIdsResult = await db.prepare(
     "SELECT id FROM shows WHERE profile_id = ?"

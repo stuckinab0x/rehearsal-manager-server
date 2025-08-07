@@ -1,12 +1,15 @@
 import Student from './student';
 import Song from './song';
 
-export default interface Show {
-  id: string;
+export interface ShowProps {
+  id: number;
   name: string;
   singleArtist: boolean;
-  twoPmRehearsal: boolean;
+  twoPMRehearsal: boolean;
   setSplitIndex: number;
+}
+
+export default interface Show extends ShowProps {
   songs: Song[];
   cast: Student[];
 }

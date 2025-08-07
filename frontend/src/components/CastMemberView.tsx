@@ -18,7 +18,7 @@ const CastMemberView: FC = () => {
   const { addStudent } = useEditor();
 
   const handleNewStudentClick = useCallback(() => {
-    addStudent({ name: nameInput, main: newStudentMain, castings: [] });
+    addStudent({ id: -1, name: nameInput, main: newStudentMain, castings: [] });
     setAddingCastMember(false);
     setNewStudentMain('Guitar');
     setNameInput('');
@@ -62,7 +62,7 @@ const CastMemberView: FC = () => {
           </Button>
         </Row>
         <div>
-          { ALL_INSTRUMENTS.map(x => <CastByInstrumentColumn key={ x } activeEdit={ activeEdit } setActiveEdit={ setActiveEdit } twoPmStart={ currentEditingShow.twoPmRehearsal } instrument={ x } castMembers={ currentEditingShow.cast.filter(student => student.main === x) } />) }
+          { ALL_INSTRUMENTS.map(x => <CastByInstrumentColumn key={ x } activeEdit={ activeEdit } setActiveEdit={ setActiveEdit } twoPmStart={ currentEditingShow.twoPMRehearsal } instrument={ x } castMembers={ currentEditingShow.cast.filter(student => student.main === x) } />) }
         </div>
       </>
       }

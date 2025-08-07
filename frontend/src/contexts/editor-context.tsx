@@ -2,7 +2,6 @@ import { FC, useState, createContext, useCallback, useContext, ReactNode, useMem
 import Show from '../models/show';
 import Student, { Casting, CastingInst, FivePMStartLesson, MainInstrument, TwoPMStartLesson } from '../models/student';
 import { useProfile } from './profile-context';
-import { v4 as uuidv4 } from 'uuid';
 import tileColors from '../tile-color';
 
 type NewShowStatus = 'songsWereAdded' | 'castWasAdded' | undefined;
@@ -22,7 +21,7 @@ interface EditorContextProps {
   currentCastEdit: Casting | null;
   highlightedStudent: string | null;
   setHighlightedStudent: (studentName: string | null) => void;
-  setCastEdit: (songId: string, inst: CastingInst) => void;
+  setCastEdit: (songId: number, inst: CastingInst) => void;
   discardCastEdit: () => void;
   assignCasting: (studentName: string) => void;
   clearAndCloseCasting: () => void;
@@ -30,9 +29,9 @@ interface EditorContextProps {
   updateStudentInfo: (studentName: string, studentInfo: StudentInfoOptions) => void;
   deleteStudent: (studentName: string) => void;
   addSong: (songName: string, artist?: string) => void;
-  renameSong: (songId: string, newName: string, newArtist?: string) => void;
-  reorderSong: (movedSongId: string, target: number) => void;
-  deleteSong: (songId: string) => void;
+  renameSong: (songId: number, newName: string, newArtist?: string) => void;
+  reorderSong: (movedSongId: number, target: number) => void;
+  deleteSong: (songId: number) => void;
   initializeShow: (showName: string, singleArtist: boolean, startsAtTwo: boolean) => void;
   saveSetListSplitIndex: (setSplitIndex: number) => void;
   availableColors: string[];
@@ -73,10 +72,10 @@ const EditorProvider: FC<EditorProviderProps> = ({ children }) => {
   
   const initializeShow = useCallback((showName: string, singleArtist: boolean, startsAtTwo: boolean) => {
     const newShow: Show = {
-      id: uuidv4(),
+      id: -1,
       name: showName.trim(),
       singleArtist,
-      twoPmRehearsal: startsAtTwo,
+      twoPMRehearsal: startsAtTwo,
       setSplitIndex: 0,
       songs: [],
       cast:[],
@@ -85,7 +84,7 @@ const EditorProvider: FC<EditorProviderProps> = ({ children }) => {
     setUnsavedData(true);
   }, [setUnsavedData]);
 
-  const setCastEdit = useCallback((songId: string, inst: CastingInst) => {
+  const setCastEdit = useCallback((songId: number, inst: CastingInst) => {
     setCurrentCastEdit({ songId, inst });
   }, [setCurrentCastEdit]);
 
@@ -166,12 +165,12 @@ const EditorProvider: FC<EditorProviderProps> = ({ children }) => {
     setCurrentEditingShow(oldState => {
       if (!oldState)
         return null;
-      return { ...oldState, songs: [...oldState.songs, { id: uuidv4(), name: songName, artist, color: availableColors[0] }] };
+      return { ...oldState, songs: [...oldState.songs, { id: Math.max(...oldState.songs.map(x => x.id)) + 1, name: songName, artist, color: availableColors[0] }] };
     });
     setUnsavedData(true);
   }, [setUnsavedData, availableColors]);
 
-  const renameSong = useCallback((songId: string, newName: string, newArtist?: string) => {
+  const renameSong = useCallback((songId: number, newName: string, newArtist?: string) => {
     setCurrentEditingShow(oldState => {
       if (!oldState)
         return null;
@@ -183,7 +182,7 @@ const EditorProvider: FC<EditorProviderProps> = ({ children }) => {
     setUnsavedData(true);
   }, [setUnsavedData]);
 
-  const reorderSong = useCallback((movedSongId: string, target: number) => {
+  const reorderSong = useCallback((movedSongId: number, target: number) => {
     setCurrentEditingShow(oldState => {
       if (!oldState)
         return null;
@@ -197,7 +196,7 @@ const EditorProvider: FC<EditorProviderProps> = ({ children }) => {
     setUnsavedData(true);
   }, [setUnsavedData]);
 
-  const deleteSong = useCallback((songId: string) => {
+  const deleteSong = useCallback((songId: number) => {
     setCurrentEditingShow(oldState => {
       if (!oldState)
         return null;

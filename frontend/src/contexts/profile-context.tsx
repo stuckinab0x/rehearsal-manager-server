@@ -1,13 +1,24 @@
 import { FC, createContext, useContext, useCallback, useEffect, useState, ReactNode, useMemo, SetStateAction } from 'react';
 import Prefs from '../models/prefs';
 import Show from '../models/show';
-import useGetProfile from '../hooks/use-get-profile';
+import Profile from '../models/profile';
+
+const getLocalCurrentProfile = () => {
+  const loaded = localStorage.getItem('currentProfile');
+  if (!loaded)
+    return undefined;
+  const data = JSON.parse(loaded);
+  if (!data.id || !data.name)
+    return undefined;
+  return data as Profile;
+}
 
 interface ProfileContextProps {
-  profile: string | undefined;
+  profile: Profile | null;
   prefs: Prefs | null;
   setPrefs: React.Dispatch<SetStateAction<Prefs | null>>;
-  setProfileRequest: (profileName: string) => void;
+  newProfileRequest: (name: string) => void;
+  setProfileAndReload: (profile: { id: number; name: string; }) => void;
   saveShowRequest: (currentEditingShow: Show) => Promise<void>;
   unsavedData: boolean;
   setUnsavedData: (unsaved: boolean) => void;
@@ -31,20 +42,32 @@ interface ProfileProviderProps {
 }
 
 const ProfileProvider: FC<ProfileProviderProps> = ({ children }) => {
-  const profile = useGetProfile();
+  const profile = getLocalCurrentProfile() || null
 
   const [unsavedData, setUnsavedData] = useState(false);
   
   const saveShowRequest = useCallback(async (currentEditingShow: Show) => {
-    const res = await fetch('/api/shows', {
+    const showsRes = await fetch(`/api/shows?profileID=${ profile?.id }`, {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(currentEditingShow),
+      body: JSON.stringify({ id: currentEditingShow.id, name: currentEditingShow.name, singleArtist: currentEditingShow.singleArtist, twoPMRehearsal: currentEditingShow.twoPMRehearsal, setSplitIndex: currentEditingShow.setSplitIndex }),
     });
 
-    if (res.status === 200)
+    const songsRes = await fetch(`/api/songs?showID=${ currentEditingShow.id }`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(currentEditingShow.songs),
+    });
+
+    const castRes = await fetch(`/api/students?showID=${ currentEditingShow.id }`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(currentEditingShow.cast),
+    });
+
+    if ([showsRes, songsRes, castRes].every(x => x.status === 200))
       setUnsavedData(false);
-  }, []);
+  }, [profile?.id]);
 
   const [prefs, setPrefs] = useState<Prefs | null>(null);
 
@@ -62,8 +85,19 @@ const ProfileProvider: FC<ProfileProviderProps> = ({ children }) => {
     localStorage.setItem('prefs', JSON.stringify(prefs))
   }, [prefs]);
 
-  const setProfileRequest = useCallback(async (profileName: string) => {
-    await fetch(`/api/profiles/${ profileName }`, { method: 'PUT' });
+  const newProfileRequest = useCallback(async (name: string) => {
+    await fetch(`/api/profiles?profileName=${ name }`, 
+      {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name }),
+      }
+    );
+    location.reload();
+  }, []);
+
+  const setProfileAndReload = useCallback((profile: Profile) => {
+    localStorage.setItem('currentProfile', JSON.stringify(profile));
     location.reload();
   }, []);
 
@@ -71,7 +105,8 @@ const ProfileProvider: FC<ProfileProviderProps> = ({ children }) => {
     profile,
     prefs,
     setPrefs,
-    setProfileRequest,
+    newProfileRequest,
+    setProfileAndReload,
     saveShowRequest,
     unsavedData,
     setUnsavedData,
@@ -79,7 +114,8 @@ const ProfileProvider: FC<ProfileProviderProps> = ({ children }) => {
     profile,
     prefs,
     setPrefs,
-    setProfileRequest,
+    newProfileRequest,
+    setProfileAndReload,
     saveShowRequest,
     unsavedData,
     setUnsavedData,

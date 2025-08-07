@@ -1,7 +1,7 @@
 import { CastingInst } from './student';
 
 export default interface Song {
-  id: string;
+  id: number;
   name: string;
   artist?: string;
   color: string;
