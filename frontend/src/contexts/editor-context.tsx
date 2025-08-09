@@ -209,7 +209,10 @@ const EditorProvider: FC<EditorProviderProps> = ({ children }) => {
     const newSongs = [...showSongs].toSorted((a, b) => a.setOrder - b.setOrder);
     const movedIndex = newSongs.findIndex(x => x.id === movedSongId);
     const moved = newSongs.splice(movedIndex, 1)[0];
-    const newOrderedSongs: Song[] = newSongs.toSpliced(target, 0, moved).map((x, i) => ({ ...x, setOrder: i }));
+
+    const newSetOrder = moved.setOrder > target ? target : target - 1;
+
+    const newOrderedSongs: Song[] = newSongs.toSpliced(newSetOrder, 0, moved).map((x, i) => ({ ...x, setOrder: i }));
 
     mutateSongs(() => { updateResourceRequest(newOrderedSongs, currentEditingShow?.id, 'songs'); return newOrderedSongs }, { optimisticData: newOrderedSongs, rollbackOnError: true });
   }, [currentEditingShow?.id, showSongs]);

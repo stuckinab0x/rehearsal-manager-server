@@ -4,7 +4,7 @@ import { useEditor } from '../../contexts/editor-context';
 import SongCastingRow from './SongCastingRow';
 import CastListHeader from './CastListHeader';
 import LowerToolbar from './LowerToolbar';
-import SongDragDropArea from './SongsDragDropArea';
+import SongDragDropArea from './SongDragDropArea';
 import { useViews } from '../../contexts/views-context';
 
 const MainCastingContainer: FC = () => {

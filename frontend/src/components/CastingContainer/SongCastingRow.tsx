@@ -4,7 +4,7 @@ import Song from '../../models/song';
 import CastingButton from './CastingButton';
 import { ALL_CAST_INST, CastingInst } from '../../models/student';
 import { useEditor } from '../../contexts/editor-context';
-import SongDragDropArea from './SongsDragDropArea';
+import SongDragDropArea from './SongDragDropArea';
 import { useProfile } from '../../contexts/profile-context';
 import { useViews } from '../../contexts/views-context';
 
