@@ -1,4 +1,4 @@
-import { FC, useState, createContext, useContext, ReactNode, useMemo, SetStateAction } from 'react';
+import { FC, useState, createContext, useContext, ReactNode, useMemo, SetStateAction, useEffect } from 'react';
 import EditorView from '../models/editor-view';
 import { useProfile } from './profile-context';
 
@@ -27,10 +27,15 @@ interface ViewsProviderProps {
 }
 
 const ViewsProvider: FC<ViewsProviderProps> = ({ children }) => {
-  const { profile } = useProfile();
+  const { profiles, currentProfile } = useProfile();
 
-  const [editorView, setEditorView] = useState<EditorView>(profile ? 'welcome' : 'profiles');
+  const [editorView, setEditorView] = useState<EditorView>(currentProfile ? 'welcome' : 'profiles');
   const [toolsMode, setToolsMode] = useState(false);
+
+  useEffect(() => {
+    if (profiles && !currentProfile)
+      setEditorView('profiles');
+  }, [profiles]);
 
   const context = useMemo(() => ({
     editorView,

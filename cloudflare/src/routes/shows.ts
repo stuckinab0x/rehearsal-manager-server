@@ -42,14 +42,33 @@ export default async function handleShowsRequest(req: Request<unknown, IncomingR
   //     const allShows = await getAllProfileShows(env.DB, parseInt(profileID))
   //     return Response.json(allShows);
   // }
+
+  if (routePath === '' && req.method === 'POST' && req.body && profileID) {
+    const show: ParsedShow = await req.json();
+    
+    await db.prepare(
+      `
+        INSERT INTO shows (name, single_artist, two_pm_rehearsal, set_split_index, profile_id)
+        VALUES (?, ?, ?, ?, ?);
+      `
+    ).bind(show.name, show.singleArtist, show.twoPMRehearsal, show.setSplitIndex, profileID).run();
+
+
+    const newestShowIDResult = await db.prepare(
+        "SELECT MAX(id) FROM shows"
+      ).run<{ "MAX(id)": number; }>();
+
+    return Response.json({ newID: newestShowIDResult.results[0]['MAX(id)'] });
+  }
   
   if (routePath === '' && req.method === 'PUT' && req.body && profileID) {
     const show = await req.json<ParsedShow>();
         
     await db.prepare(
       `
-        INSERT OR REPLACE INTO shows (id, name, single_artist, two_pm_rehearsal, set_split_index, profile_id)
-        VALUES ((SELECT id FROM shows WHERE id = ?), ?, ?, ?, ?, ?);
+        UPDATE shows
+        SET name = ?2, single_artist = ?3, two_pm_rehearsal = ?4, set_split_index = ?5, profile_id = ?6
+        WHERE id = ?1
       `
     ).bind(show.id, show.name, show.singleArtist, show.twoPMRehearsal, show.setSplitIndex, profileID).run();
 

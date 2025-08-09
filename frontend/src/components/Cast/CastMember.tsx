@@ -8,8 +8,8 @@ import MainSelector from './MainSelector';
 interface CastMemberProps {
   student: Student;
   twoPmStart: boolean;
-  activeEdit: string | null;
-  setActiveEdit: (studentOldName: string | null) => void;
+  activeEdit: number | null;
+  setActiveEdit: (studentID: number| null) => void;
 }
 
 const CastMember: FC<CastMemberProps> = ({ student, twoPmStart, activeEdit, setActiveEdit }) => {
@@ -18,7 +18,7 @@ const CastMember: FC<CastMemberProps> = ({ student, twoPmStart, activeEdit, setA
   const [deleting, setDeleting] = useState(false);
 
   const handleNameConfirm = useCallback(() => {
-    updateStudentInfo(student.name, { name: nameInput, lesson: student.lesson, main: student.main  });
+    updateStudentInfo(student.id, { name: nameInput, lesson: student.lesson, main: student.main  });
     setActiveEdit(null);
   }, [updateStudentInfo, nameInput, student, setActiveEdit]);
 
@@ -31,17 +31,17 @@ const CastMember: FC<CastMemberProps> = ({ student, twoPmStart, activeEdit, setA
   }, [setActiveEdit, deleteStudent, activeEdit]);
 
   return (
-    <CastMemberMain $disabled={ !!activeEdit && activeEdit !== student.name }>
-      { activeEdit !== student.name && <>
+    <CastMemberMain $disabled={ !!activeEdit && activeEdit !== student.id }>
+      { activeEdit !== student.id && <>
         <div>
-          <span className='material-symbols-outlined' onClick={ () => setActiveEdit(student.name) }>edit</span>
-          <span className='material-symbols-outlined' onClick={ () => { setActiveEdit(student.name); setDeleting(true) } }>delete</span>
+          <span className='material-symbols-outlined' onClick={ () => setActiveEdit(student.id) }>edit</span>
+          <span className='material-symbols-outlined' onClick={ () => { setActiveEdit(student.id); setDeleting(true) } }>delete</span>
           <h3>{ student.name }</h3>
         </div>
         <LessonSelector student={ student } twoPmStart={ twoPmStart } />
         <MainSelector student={ student } />
       </> }
-      { activeEdit === student.name && !deleting && <>
+      { activeEdit === student.id && !deleting && <>
         <ConfirmButton onClick={ handleNameConfirm }>
           <h3>Confirm</h3>
         </ConfirmButton>
@@ -50,7 +50,7 @@ const CastMember: FC<CastMemberProps> = ({ student, twoPmStart, activeEdit, setA
           <h3>Discard Changes</h3>
         </ActionButton>
       </> }
-      { activeEdit === student.name && deleting && <>
+      { activeEdit === student.id && deleting && <>
         <ConfirmButton onClick={ handleDeleteConfirm }>
           <h3>Remove</h3>
         </ConfirmButton>

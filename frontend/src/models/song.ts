@@ -4,6 +4,7 @@ export default interface Song {
   id: number;
   name: string;
   artist?: string;
+  setOrder: number;
   color: string;
 }
 

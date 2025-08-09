@@ -2,8 +2,6 @@ export default async function handleProfilesRequest(req: Request<unknown, Incomi
   const url = new URL(req.url);
   const routePath = url.pathname.split('/api/profiles')[1];
 
-  const showID = url.searchParams.get('showID');
-
   if (routePath === '' && req.method === 'GET' && !url.searchParams.size) {
     const profileNamesAndIDsResult = await db.prepare(
       "SELECT id, name FROM profiles"

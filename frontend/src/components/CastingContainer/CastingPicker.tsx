@@ -6,11 +6,11 @@ import PickerColumn from './PickerColumn';
 import { getFullInstName } from '../../utils';
 
 const CastingPicker: FC = () => {
-  const { currentCastEdit, currentEditingShow, clearAndCloseCasting, discardCastEdit } = useEditor();
+  const { currentCastEdit, showSongs, showCast, clearAndCloseCasting, discardCastEdit } = useEditor();
 
-  const songName = useMemo(() => currentEditingShow?.songs.find(x => x.id === currentCastEdit?.songId)?.name, [currentEditingShow, currentCastEdit]);
+  const songName = useMemo(() => showSongs?.find(x => x.id === currentCastEdit?.songID)?.name, [showSongs, currentCastEdit]);
 
-  if (currentEditingShow && currentCastEdit)
+  if (showSongs && showCast && currentCastEdit)
   return (
     <PickerMain>
       <h2>{ getFullInstName(currentCastEdit?.inst) }</h2>
@@ -23,7 +23,7 @@ const CastingPicker: FC = () => {
           <h3>Discard Change</h3>
         </Button>
       </div>
-      <div>{ ALL_INSTRUMENTS.map(x => <PickerColumn key={ x } instrument={ x } castMembers={ currentEditingShow.cast.filter(student => student.main === x) } />) }</div>
+      <div>{ ALL_INSTRUMENTS.map(x => <PickerColumn key={ x } instrument={ x } castMembers={ showCast.filter(student => student.main === x) } />) }</div>
     </PickerMain>
   )
 }

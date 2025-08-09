@@ -1,7 +1,7 @@
 import { FC, useState } from 'react';
 import styled from 'styled-components';
-import { useEditor } from '../contexts/editor-context';
 import { useViews } from '../contexts/views-context';
+import { useProfile } from '../contexts/profile-context';
 
 const NewShowView: FC = () => {
   const [editingName, setEditingName] = useState(true);
@@ -10,7 +10,7 @@ const NewShowView: FC = () => {
   const [startsAtTwo, setStartsAtTwo] = useState(0);
 
   const { setEditorView } = useViews();
-  const { initializeShow } = useEditor();
+  const { initializeShow } = useProfile();
 
   return (
     <ViewMain>

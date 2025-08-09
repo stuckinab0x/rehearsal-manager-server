@@ -1,9 +1,7 @@
 import { FC, useState, useEffect, useCallback } from 'react';
 import styled from 'styled-components';
-import { useEditor } from '../contexts/editor-context';
 import { useViews } from '../contexts/views-context';
 import { useProfile } from '../contexts/profile-context';
-import Show from '../models/show';
 
 interface ShowNameAndId {
   id: number;
@@ -12,15 +10,19 @@ interface ShowNameAndId {
 
 const WelcomeScreen: FC = () => {
   const { setEditorView } = useViews();
-  const { setCurrentEditingShow } = useEditor();
-  const { profile } = useProfile();
+  const { profiles, currentProfile, setCurrentShowID } = useProfile();
 
   const [showNamesAndIds, setShowNamesAndIds] = useState<ShowNameAndId[] | undefined>();
 
   useEffect(() => {
+    if (profiles && !currentProfile)
+      setEditorView('profiles');
+  }, [profiles, currentProfile]);
+
+  useEffect(() => {
     const requestShowNames = async () => {
       try {
-        const res = await fetch(`/api/shows?profileID=${ profile?.id }`);
+        const res = await fetch(`/api/shows?profileID=${ currentProfile?.id }`);
         const shows: ShowNameAndId[] = await res.json();
           setShowNamesAndIds(shows);
       } catch (error) {
@@ -30,26 +32,10 @@ const WelcomeScreen: FC = () => {
     requestShowNames();
   }, []);
 
-  const loadShowRequest = useCallback(async (showId: number) => {
-    try {
-      const showPropsRes = await fetch(`/api/shows?showID=${ showId }`);
-      const showProps = await showPropsRes.json();
-      const songsRes = await fetch(`/api/songs?showID=${ showId }`);
-      const songs = await songsRes.json();
-      const studentsRes = await fetch(`/api/students?showID=${ showId }`);
-      const students = await studentsRes.json();
-
-      const show: Show = { ...showProps, songs, cast: students };
-
-
-      
-      setCurrentEditingShow(show);
-      setEditorView('showOverview');
-    } catch (error) {
-      console.log(error);
-    }
-  }, [setCurrentEditingShow, setEditorView]);
-
+  const handleShowClick = useCallback((showID: number) => {
+    setCurrentShowID(showID);
+    setEditorView('showOverview');
+  }, [])
 
   return (
     <ViewMain>
@@ -57,7 +43,7 @@ const WelcomeScreen: FC = () => {
         Create/Edit Shows:
       </h1>
       { showNamesAndIds && <ShowsList>
-        { showNamesAndIds.map(x => <Button key={ x.id } onClick={ () => loadShowRequest(x.id) }>
+        { showNamesAndIds.map(x => <Button key={ x.id } onClick={ () => handleShowClick(x.id) }>
           <h2>{ x.name }</h2>
         </Button>) }
       </ShowsList> }

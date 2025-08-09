@@ -9,20 +9,20 @@ import { useViews } from '../../contexts/views-context';
 
 const MainCastingContainer: FC = () => {
   const { toolsMode } = useViews();
-  const { currentEditingShow, currentCastEdit, reorderSong } = useEditor();
+  const { currentEditingShow, currentCastEdit, reorderSong, showSongs } = useEditor();
   
-  const [activeSongEdit, setActiveSongEdit] = useState<string | null>(null);
+  const [activeSongEdit, setActiveSongEdit] = useState<number | null>(null);
   const [addingSong, setAddingSong] = useState(false);
-  const [currentDragging, setCurrentDragging] = useState<string | null>('');
+  const [currentDragging, setCurrentDragging] = useState<number | null>(null);
   const [endDragHover, setEndDragHover] = useState(false);
 
   const handleEndDrop = useCallback(() => {
-    if (!currentDragging || !currentEditingShow)
+    if (!currentDragging|| !showSongs)
       return;
-    reorderSong(currentDragging, currentEditingShow?.songs.length)
+    reorderSong(currentDragging, showSongs.length)
     setEndDragHover(false);
     setCurrentDragging(null);
-  }, [currentDragging, currentEditingShow, reorderSong]);
+  }, [currentDragging, reorderSong]);
 
   const insertSetDivider = useCallback((elements: JSX.Element[]) => {
     if (!currentEditingShow)
@@ -33,11 +33,11 @@ const MainCastingContainer: FC = () => {
     return setList;
   }, [currentEditingShow, toolsMode]);
 
-  if (currentEditingShow)
+  if (currentEditingShow && showSongs)
   return (
     <ContainerMain $fade={ !!currentCastEdit } >
       <CastListHeader showName={ currentEditingShow.name } disabled={ addingSong } />
-      { insertSetDivider(currentEditingShow.songs.map(song => 
+      { insertSetDivider(showSongs.toSorted((a, b) => a.setOrder - b.setOrder).map(song => 
           <SongCastingRow
             key={ song.id }
             song={ song }
@@ -48,7 +48,7 @@ const MainCastingContainer: FC = () => {
         ))
       }
       { toolsMode && <SongDragDropArea
-        songId='$$last'
+        songID={ -1 }
         currentDragging={ currentDragging }
         dragHover={ endDragHover }
         setDragHover={ setEndDragHover }

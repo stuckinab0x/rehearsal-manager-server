@@ -13,7 +13,7 @@ interface LowerToolbarProps {
 const LowerToolbar: FC<LowerToolbarProps> = ({ addingSong, setAddingSong }) => {
   const { prefs, setPrefs } = useProfile();
   const {  setEditorView, toolsMode } = useViews();
-  const { currentEditingShow, addSong, saveSetListSplitIndex } = useEditor();
+  const { currentEditingShow, showSongs, addSong, saveSetListSplitIndex } = useEditor();
   
   const [nameInput, setNameInput] = useState('');
   const [artistInput, setArtistInput] = useState('');
@@ -26,8 +26,8 @@ const LowerToolbar: FC<LowerToolbarProps> = ({ addingSong, setAddingSong }) => {
   }, [nameInput, artistInput, addSong, currentEditingShow, setAddingSong]);
 
   const nameIsDupe = useMemo(() => {
-    return currentEditingShow?.songs.some(x => x.name.toLowerCase() === nameInput.toLowerCase());
-  }, [currentEditingShow, nameInput]);
+    return showSongs?.some(x => x.name.toLowerCase() === nameInput.toLowerCase());
+  }, [showSongs, nameInput]);
 
   const handlePrefsToggle = useCallback((prefName: keyof Prefs) => {
     setPrefs(oldState => {
@@ -38,10 +38,10 @@ const LowerToolbar: FC<LowerToolbarProps> = ({ addingSong, setAddingSong }) => {
   }, [setPrefs]);
 
   const handleSetSplitClick = useCallback((newSplitIndex: number) => {
-    if (newSplitIndex < 0 || (currentEditingShow && newSplitIndex > currentEditingShow.songs.length))
+    if (newSplitIndex < 0 || (showSongs && newSplitIndex > showSongs.length))
       return;
-    saveSetListSplitIndex(newSplitIndex)
-  }, [currentEditingShow, saveSetListSplitIndex]);
+    saveSetListSplitIndex(newSplitIndex);
+  }, [showSongs, saveSetListSplitIndex]);
 
   if (toolsMode && currentEditingShow)
     return (

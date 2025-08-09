@@ -27,6 +27,7 @@ CREATE TABLE songs (
   id INTEGER PRIMARY KEY,
   name TEXT,
   artist TEXT,
+  set_order NUMBER,
   color TEXT,
   show_id INTEGER,
   FOREIGN KEY(show_id) REFERENCES shows(id) ON DELETE CASCADE

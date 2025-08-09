@@ -10,6 +10,7 @@ export interface Song {
   id: number;
   name: string;
   artist?: string;
+  set_order: number;
   color: string;
 }
 

@@ -5,13 +5,13 @@ import AllCastColumn from './AllCastColumn';
 import { useEditor } from '../../contexts/editor-context';
 
 const AllCast: FC = () => {
-  const { currentEditingShow } = useEditor();
+  const { showCast } = useEditor();
   
-  if (currentEditingShow)
+  if (showCast)
     return (
       <AllCastMain>
         <h3>Click a student to highlight their songs</h3>
-        <div>{ ALL_INSTRUMENTS.map(x => <AllCastColumn key={ x } instrument={ x } students={ currentEditingShow.cast.filter(student => student.main === x).map(student => student.name) } />) }</div>
+        <div>{ ALL_INSTRUMENTS.map(x => <AllCastColumn key={ x } instrument={ x } students={ showCast.filter(student => student.main === x).map(student => student.name) } />) }</div>
       </AllCastMain>
     )
 }

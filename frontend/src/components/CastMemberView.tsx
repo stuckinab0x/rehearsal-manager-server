@@ -8,9 +8,9 @@ import { useViews } from '../contexts/views-context';
 
 const CastMemberView: FC = () => {
   const { setEditorView } = useViews();
-  const { currentEditingShow } = useEditor();
+  const { currentEditingShow, showCast } = useEditor();
   
-  const [activeEdit, setActiveEdit] = useState<string | null>(null);
+  const [activeEdit, setActiveEdit] = useState<number | null>(null);
   const [nameInput, setNameInput] = useState('');
   const [addingCastMember, setAddingCastMember] = useState(false);
   const [newStudentMain, setNewStudentMain] = useState<MainInstrument>('Guitar');
@@ -25,12 +25,12 @@ const CastMemberView: FC = () => {
   }, [nameInput, newStudentMain, addStudent]);
 
   const inputIsDupe = useMemo(() => {
-    if (!currentEditingShow)
+    if (!showCast)
       return false;
-    return currentEditingShow.cast.some(x => x.name.toLowerCase() === nameInput.toLowerCase())
-  }, [currentEditingShow, nameInput]);
+    return showCast.some(x => x.name.toLowerCase() === nameInput.toLowerCase())
+  }, [showCast, nameInput]);
 
-  if (currentEditingShow)
+  if (currentEditingShow && showCast)
   return (
     <ViewMain>
       <h2>{ currentEditingShow.name }:  Manage Cast Members</h2>
@@ -62,7 +62,7 @@ const CastMemberView: FC = () => {
           </Button>
         </Row>
         <div>
-          { ALL_INSTRUMENTS.map(x => <CastByInstrumentColumn key={ x } activeEdit={ activeEdit } setActiveEdit={ setActiveEdit } twoPmStart={ currentEditingShow.twoPMRehearsal } instrument={ x } castMembers={ currentEditingShow.cast.filter(student => student.main === x) } />) }
+          { ALL_INSTRUMENTS.map(x => <CastByInstrumentColumn key={ x } activeEdit={ activeEdit } setActiveEdit={ setActiveEdit } twoPmStart={ currentEditingShow.twoPMRehearsal } instrument={ x } castMembers={ showCast.filter(student => student.main === x) } />) }
         </div>
       </>
       }

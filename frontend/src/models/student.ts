@@ -7,7 +7,7 @@ export default interface Student {
 }
 
 export interface Casting {
-  songId: number;
+  songID: number;
   inst: CastingInst;
 }
 

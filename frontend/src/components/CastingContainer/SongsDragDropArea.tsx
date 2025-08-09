@@ -2,18 +2,18 @@ import { FC } from 'react';
 import styled from 'styled-components';
 
 interface SongDragDropAreaProps {
-  songId: string;
-  currentDragging: string | null;
+  songID: number;
+  currentDragging: number | null;
   dragHover: boolean;
   setDragHover: (hover: boolean) => void;
   handleDrop: () => void;
   last?: boolean;
 }
 
-const SongDragDropArea: FC<SongDragDropAreaProps> = ({ songId, currentDragging, dragHover, setDragHover, handleDrop, last }) => (
+const SongDragDropArea: FC<SongDragDropAreaProps> = ({ songID, currentDragging, dragHover, setDragHover, handleDrop, last }) => (
   <DragDropArea
-    $hover={ dragHover && (!!last || currentDragging !== songId) }
-    onDragOver={ event => { setDragHover(true); (!!last || currentDragging !== songId) && event.preventDefault() } }
+    $hover={ dragHover && (!!last || currentDragging !== songID) }
+    onDragOver={ event => { setDragHover(true); (!!last || currentDragging !== songID) && event.preventDefault() } }
     onDragLeave={ () => setDragHover(false) }
     onDrop={ handleDrop }>
     <h3>

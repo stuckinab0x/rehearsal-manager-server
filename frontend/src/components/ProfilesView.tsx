@@ -1,31 +1,12 @@
-import { FC, useState, useEffect } from 'react';
+import { FC, useState } from 'react';
 import styled from 'styled-components';
 import { useProfile } from '../contexts/profile-context';
 
-interface Profile {
-  id: number;
-  name: string;
-}
-
 const ProfilesView: FC = () => {
-  const { setProfileAndReload, newProfileRequest } = useProfile();
+  const { profiles, setProfileAndReload, newProfileRequest } = useProfile();
 
   const [input, setInput] = useState('');
   const [creatingNew, setCreatingNew] = useState(false);
-  const [profiles, setProfiles] = useState<Profile[] | undefined>(undefined);
-
-  useEffect(() => {
-    const requestProfiles = async () => {
-      try {
-        const res = await fetch('/api/profiles');
-        const profiles: { id: string, name: string }[] = await res.json();
-        setProfiles(profiles.map(x => ({ ...x, id: parseInt(x.id) })));
-      } catch (error) {
-        console.log(error);
-      }
-    }
-    requestProfiles();
-  }, []);
 
   if (!profiles)
   return (

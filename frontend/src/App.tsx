@@ -6,6 +6,7 @@ import EditorView from './components/EditorView'
 import EditorProvider from './contexts/editor-context'
 import ProfileProvider from './contexts/profile-context'
 import ViewsProvider from './contexts/views-context'
+import SWRProvider from './providers/SWRProvider'
 
 const GlobalStyle = createGlobalStyle`
   html, body {
@@ -30,21 +31,23 @@ const GlobalStyle = createGlobalStyle`
 const App: FC = () => {
   return (
     <ThemeProvider theme={ theme }>
-      <ProfileProvider>
-        <ViewsProvider>
-          <EditorProvider>
-            <Main>
-              <GlobalStyle />
-              <Nav />
-              <Content>
-                <EditorContainer>
-                  <EditorView />
-                </EditorContainer>
-              </Content>
-            </Main>
-          </EditorProvider>
-        </ViewsProvider>
-      </ProfileProvider>
+      <SWRProvider>
+        <ProfileProvider>
+          <ViewsProvider>
+            <EditorProvider>
+              <Main>
+                <GlobalStyle />
+                <Nav />
+                <Content>
+                  <EditorContainer>
+                    <EditorView />
+                  </EditorContainer>
+                </Content>
+              </Main>
+            </EditorProvider>
+          </ViewsProvider>
+        </ProfileProvider>
+      </SWRProvider>
     </ThemeProvider>
   )
 }

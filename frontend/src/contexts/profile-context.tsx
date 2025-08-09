@@ -1,7 +1,8 @@
 import { FC, createContext, useContext, useCallback, useEffect, useState, ReactNode, useMemo, SetStateAction } from 'react';
 import Prefs from '../models/prefs';
-import Show from '../models/show';
+import { ShowProps } from '../models/show';
 import Profile from '../models/profile';
+import useSWR from 'swr';
 
 const getLocalCurrentProfile = () => {
   const loaded = localStorage.getItem('currentProfile');
@@ -13,15 +14,28 @@ const getLocalCurrentProfile = () => {
   return data as Profile;
 }
 
+const addShowRequest = async (showProps: ShowProps, profileID: number) => {
+  const res = await fetch(`/api/shows?profileID=${ profileID }`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(showProps),
+  });
+
+  const data: { newID: number } = await res.json();
+  return data.newID;
+}
+      
+
 interface ProfileContextProps {
-  profile: Profile | null;
+  profiles: Profile[] | undefined;
+  currentProfile: Profile | undefined;
   prefs: Prefs | null;
   setPrefs: React.Dispatch<SetStateAction<Prefs | null>>;
   newProfileRequest: (name: string) => void;
   setProfileAndReload: (profile: { id: number; name: string; }) => void;
-  saveShowRequest: (currentEditingShow: Show) => Promise<void>;
-  unsavedData: boolean;
-  setUnsavedData: (unsaved: boolean) => void;
+  currentShowID: number | undefined;
+  setCurrentShowID: (showID: number) => void;
+  initializeShow: (showName: string, singleArtist: boolean, startsAtTwo: boolean) => void;
 }
 
 const ProfileContext = createContext<ProfileContextProps | null>(null);
@@ -42,32 +56,47 @@ interface ProfileProviderProps {
 }
 
 const ProfileProvider: FC<ProfileProviderProps> = ({ children }) => {
-  const profile = getLocalCurrentProfile() || null
-
-  const [unsavedData, setUnsavedData] = useState(false);
+  const { data: profiles } = useSWR<Profile[]>('/api/profiles');
   
-  const saveShowRequest = useCallback(async (currentEditingShow: Show) => {
-    const showsRes = await fetch(`/api/shows?profileID=${ profile?.id }`, {
-      method: 'PUT',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ id: currentEditingShow.id, name: currentEditingShow.name, singleArtist: currentEditingShow.singleArtist, twoPMRehearsal: currentEditingShow.twoPMRehearsal, setSplitIndex: currentEditingShow.setSplitIndex }),
-    });
+  const [currentProfile, setCurrentProfile] = useState<Profile | undefined>(getLocalCurrentProfile());
 
-    const songsRes = await fetch(`/api/songs?showID=${ currentEditingShow.id }`, {
-      method: 'PUT',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(currentEditingShow.songs),
-    });
+  useEffect(() => {
+    if (!profiles)
+      return;
+    
+    if (!profiles.length) {
+      localStorage.removeItem('currentProfile');
+      setCurrentProfile(undefined);
+      return;
+    }
 
-    const castRes = await fetch(`/api/students?showID=${ currentEditingShow.id }`, {
-      method: 'PUT',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(currentEditingShow.cast),
-    });
+    const local = getLocalCurrentProfile();
+    if (!local)
+      return;
 
-    if ([showsRes, songsRes, castRes].every(x => x.status === 200))
-      setUnsavedData(false);
-  }, [profile?.id]);
+    const foundProfile = profiles.find(x => x.id === local.id && x.name === local.name)
+    if (foundProfile)
+      setCurrentProfile(foundProfile);
+  }, [profiles]);
+
+  const [currentShowID, setCurrentShowID] = useState<number | undefined>(undefined);
+
+  const initializeShow = useCallback(async (showName: string, singleArtist: boolean, startsAtTwo: boolean) => {
+    if (!currentProfile)
+      return;
+      
+    const newShow: ShowProps = {
+      id: -1,
+      name: showName.trim(),
+      singleArtist,
+      twoPMRehearsal: startsAtTwo,
+      setSplitIndex: 0,
+    };
+
+    const resShowID = await addShowRequest(newShow, currentProfile.id);
+
+    setCurrentShowID(resShowID);
+  }, [currentProfile?.id]);
 
   const [prefs, setPrefs] = useState<Prefs | null>(null);
 
@@ -102,23 +131,25 @@ const ProfileProvider: FC<ProfileProviderProps> = ({ children }) => {
   }, []);
 
   const context = useMemo(() => ({
-    profile,
+    profiles,
+    currentProfile,
     prefs,
     setPrefs,
     newProfileRequest,
     setProfileAndReload,
-    saveShowRequest,
-    unsavedData,
-    setUnsavedData,
+    currentShowID,
+    setCurrentShowID,
+    initializeShow,
   }), [
-    profile,
+    profiles,
+    currentProfile,
     prefs,
     setPrefs,
     newProfileRequest,
     setProfileAndReload,
-    saveShowRequest,
-    unsavedData,
-    setUnsavedData,
+    currentShowID,
+    setCurrentShowID,
+    initializeShow,
   ]);
 
   return (

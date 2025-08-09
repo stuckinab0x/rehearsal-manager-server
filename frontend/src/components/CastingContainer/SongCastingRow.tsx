@@ -11,15 +11,15 @@ import { useViews } from '../../contexts/views-context';
 interface SongCastingRowProps {
   song: Song;
   disabled: boolean;
-  setActiveSongEdit: (activeEdit: string | null) => void;
-  currentDragging: string | null;
-  setCurrentDragging: (songName: string | null) => void;
+  setActiveSongEdit: (activeEdit: number | null) => void;
+  currentDragging: number | null;
+  setCurrentDragging: (songID: number | null) => void;
 }
 
 const SongCastingRow: FC<SongCastingRowProps> = ({ song, disabled, setActiveSongEdit, currentDragging, setCurrentDragging }) => {
   const { prefs } = useProfile();
   const { toolsMode } = useViews();
-  const { currentEditingShow, setCastEdit, renameSong, deleteSong, reorderSong } = useEditor();
+  const { currentEditingShow, showSongs, showCast, setCastEdit, renameSong, deleteSong, reorderSong } = useEditor();
   
   const [editingName, setEditingName] = useState(false);
   const [deleting, setDeleting] = useState(false);
@@ -40,19 +40,19 @@ const SongCastingRow: FC<SongCastingRowProps> = ({ song, disabled, setActiveSong
     return hidden;
   }, [prefs]);
 
-  const getCasting = useCallback((songId: string, inst: CastingInst) => {
-    if (!currentEditingShow)
+  const getCasting = useCallback((songID: number, inst: CastingInst) => {
+    if (!showCast)
       return;
-    const student = currentEditingShow.cast.find(x => !!x.castings.find(casting => casting.songId === songId && casting.inst === inst));
+    const student = showCast.find(x => !!x.castings.find(casting => casting.songID === songID && casting.inst === inst));
     if (student)
       return student.name;
-  }, [currentEditingShow]);
+  }, [showCast]);
 
   const nameIsDupe = useMemo(() => {
-    if (!currentEditingShow)
+    if (!showSongs)
       return false;
-    return currentEditingShow?.songs.filter(x => x.name !== song.name).some(x => x.name.toLowerCase() === nameInput.toLowerCase());
-  }, [currentEditingShow, nameInput, song.name]);
+    return showSongs.filter(x => x.name !== song.name).some(x => x.name.toLowerCase() === nameInput.toLowerCase());
+  }, [showSongs, nameInput, song.name]);
 
   const handleRenameConfirm = useCallback(() => {
     renameSong(song.id, nameInput, artistInput);
@@ -71,19 +71,21 @@ const SongCastingRow: FC<SongCastingRowProps> = ({ song, disabled, setActiveSong
   }, [setCurrentDragging, song.id]);
 
   const handleDrop = useCallback(() => {
-    const songPositionIndex = currentEditingShow?.songs.findIndex(x => x.id === song.id)
-    if (currentDragging === song.id || !currentDragging || songPositionIndex === undefined)
+    if (!showSongs)
       return;
-    reorderSong(currentDragging, songPositionIndex)
+    
+    if (currentDragging === song.id || !currentDragging)
+      return;
+    reorderSong(currentDragging, song.setOrder);
     setDragHover(false);
     setCurrentDragging(null);
-  }, [reorderSong, song.id, currentDragging, setCurrentDragging, currentEditingShow?.songs]);
+  }, [reorderSong, song.id, currentDragging, setCurrentDragging, showSongs]);
 
   if (hidden && currentEditingShow)
     return (
       <RowMain $disabled={ disabled }>
         { toolsMode && <SongDragDropArea 
-          songId={ song.id }
+          songID={ song.id }
           currentDragging={ currentDragging }
           dragHover={ dragHover }
           setDragHover={ setDragHover }

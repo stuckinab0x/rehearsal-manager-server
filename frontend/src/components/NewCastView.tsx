@@ -3,16 +3,14 @@ import styled from 'styled-components';
 import { useEditor } from '../contexts/editor-context';
 import InputUpdate from '../models/input-update';
 import { createInputs } from '../utils';
-import { useProfile } from '../contexts/profile-context';
 import { useViews } from '../contexts/views-context';
-import { MainInstrument } from '../models/student';
+import Student, { MainInstrument } from '../models/student';
 
-const mapInputs = (inputs: InputUpdate[], main: MainInstrument) => inputs.map(x => ({ name: x.value.trim(), main, castings: [], }));
+const mapInputs = (inputs: InputUpdate[], main: MainInstrument) => inputs.map<Student>(x => ({ id: -1, name: x.value.trim(), main, castings: [] }));
 
 const NewCastView: FC = () => {
-  const { setUnsavedData } = useProfile();
   const { setEditorView } = useViews();
-  const { newShowStatus, setNewShowStatus, currentEditingShow, setCurrentEditingShow } = useEditor();
+  const { newShowStatus, setNewShowStatus, currentEditingShow, addNewCastStudents } = useEditor();
 
   const [guitarInputs, setGuitarInputs] = useState<InputUpdate[]>(createInputs(8));
   const [bassInputs, setBassInputs] = useState<InputUpdate[]>(createInputs(4));
@@ -49,7 +47,7 @@ const NewCastView: FC = () => {
   const addCast = useCallback(() => {
     if (!currentEditingShow)
       return;
-    setCurrentEditingShow({ ...currentEditingShow, cast: potentialCastList });
+    addNewCastStudents(potentialCastList);
     if (newShowStatus === 'songsWereAdded') {
       setEditorView('showOverview');
       setNewShowStatus(undefined);
@@ -58,8 +56,7 @@ const NewCastView: FC = () => {
       setNewShowStatus('castWasAdded');
       setEditorView('newShowSongs');
     }
-    setUnsavedData(true);
-  }, [potentialCastList, currentEditingShow, newShowStatus, setNewShowStatus, setEditorView, setCurrentEditingShow, setUnsavedData])
+  }, [potentialCastList, currentEditingShow, newShowStatus, setNewShowStatus, setEditorView])
 
   const instrumentSectionProps = useMemo(() => [
     { instName: 'Guitar', inputs: guitarInputs, setter: setGuitarInputs },
