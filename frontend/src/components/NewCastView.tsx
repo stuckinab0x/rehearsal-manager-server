@@ -6,7 +6,7 @@ import { createInputs } from '../utils';
 import { useViews } from '../contexts/views-context';
 import Student, { MainInstrument } from '../models/student';
 
-const mapInputs = (inputs: InputUpdate[], main: MainInstrument) => inputs.map<Student>(x => ({ id: -1, name: x.value.trim(), main, castings: [] }));
+const mapInputs = (inputs: InputUpdate[], main: MainInstrument) => inputs.map<Student>(x => ({ id: crypto.randomUUID(), name: x.value.trim(), main, castings: [] }));
 
 const NewCastView: FC = () => {
   const { setEditorView } = useViews();

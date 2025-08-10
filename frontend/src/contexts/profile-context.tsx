@@ -14,15 +14,12 @@ const getLocalCurrentProfile = () => {
   return data as Profile;
 }
 
-const addShowRequest = async (showProps: ShowProps, profileID: number) => {
-  const res = await fetch(`/api/shows?profileID=${ profileID }`, {
+const addShowRequest = async (showProps: ShowProps, profileID: string) => {
+  await fetch(`/api/shows?profileID=${ profileID }`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(showProps),
   });
-
-  const data: { newID: number } = await res.json();
-  return data.newID;
 }
       
 
@@ -32,9 +29,9 @@ interface ProfileContextProps {
   prefs: Prefs | null;
   setPrefs: React.Dispatch<SetStateAction<Prefs | null>>;
   newProfileRequest: (name: string) => void;
-  setProfileAndReload: (profile: { id: number; name: string; }) => void;
-  currentShowID: number | undefined;
-  setCurrentShowID: (showID: number) => void;
+  setProfileAndReload: (profile: { id: string; name: string; }) => void;
+  currentShowID: string | undefined;
+  setCurrentShowID: (showID: string) => void;
   initializeShow: (showName: string, singleArtist: boolean, startsAtTwo: boolean) => void;
 }
 
@@ -59,6 +56,7 @@ const ProfileProvider: FC<ProfileProviderProps> = ({ children }) => {
   const { data: profiles } = useSWR<Profile[]>('/api/profiles');
   
   const [currentProfile, setCurrentProfile] = useState<Profile | undefined>(getLocalCurrentProfile());
+  const [currentShowID, setCurrentShowID] = useState<string | undefined>(undefined);
 
   useEffect(() => {
     if (!profiles)
@@ -79,23 +77,23 @@ const ProfileProvider: FC<ProfileProviderProps> = ({ children }) => {
       setCurrentProfile(foundProfile);
   }, [profiles]);
 
-  const [currentShowID, setCurrentShowID] = useState<number | undefined>(undefined);
-
   const initializeShow = useCallback(async (showName: string, singleArtist: boolean, startsAtTwo: boolean) => {
     if (!currentProfile)
       return;
+
+    const newShowID = crypto.randomUUID();
       
     const newShow: ShowProps = {
-      id: -1,
+      id: newShowID,
       name: showName.trim(),
       singleArtist,
       twoPMRehearsal: startsAtTwo,
       setSplitIndex: 0,
     };
 
-    const resShowID = await addShowRequest(newShow, currentProfile.id);
+    await addShowRequest(newShow, currentProfile.id);
 
-    setCurrentShowID(resShowID);
+    setCurrentShowID(newShowID);
   }, [currentProfile?.id]);
 
   const [prefs, setPrefs] = useState<Prefs | null>(null);
@@ -119,7 +117,7 @@ const ProfileProvider: FC<ProfileProviderProps> = ({ children }) => {
       {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name }),
+        body: JSON.stringify({ id: crypto.randomUUID(), name }),
       }
     );
     location.reload();

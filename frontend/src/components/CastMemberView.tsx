@@ -10,7 +10,7 @@ const CastMemberView: FC = () => {
   const { setEditorView } = useViews();
   const { currentEditingShow, showCast } = useEditor();
   
-  const [activeEdit, setActiveEdit] = useState<number | null>(null);
+  const [activeEdit, setActiveEdit] = useState<string | null>(null);
   const [nameInput, setNameInput] = useState('');
   const [addingCastMember, setAddingCastMember] = useState(false);
   const [newStudentMain, setNewStudentMain] = useState<MainInstrument>('Guitar');
@@ -18,7 +18,7 @@ const CastMemberView: FC = () => {
   const { addStudent } = useEditor();
 
   const handleNewStudentClick = useCallback(() => {
-    addStudent({ id: -1, name: nameInput, main: newStudentMain, castings: [] });
+    addStudent({ id: crypto.randomUUID(), name: nameInput, main: newStudentMain, castings: [] });
     setAddingCastMember(false);
     setNewStudentMain('Guitar');
     setNameInput('');

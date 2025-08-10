@@ -7,8 +7,8 @@ interface CastByInstrumentColumnProps {
   instrument: MainInstrument;
   castMembers: Student[];
   twoPmStart: boolean;
-  activeEdit: number | null;
-  setActiveEdit: (studentID: number | null) => void;
+  activeEdit: string | null;
+  setActiveEdit: (studentID: string | null) => void;
 }
 
 const CastByInstrumentColumn: FC<CastByInstrumentColumnProps> = ({ instrument, castMembers, twoPmStart, activeEdit, setActiveEdit }) => (

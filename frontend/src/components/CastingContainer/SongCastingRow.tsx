@@ -11,9 +11,9 @@ import { useViews } from '../../contexts/views-context';
 interface SongCastingRowProps {
   song: Song;
   disabled: boolean;
-  setActiveSongEdit: (activeEdit: number | null) => void;
-  currentDragging: number | null;
-  setCurrentDragging: (songID: number | null) => void;
+  setActiveSongEdit: (activeEdit: string | null) => void;
+  currentDragging: string | null;
+  setCurrentDragging: (songID: string | null) => void;
 }
 
 const SongCastingRow: FC<SongCastingRowProps> = ({ song, disabled, setActiveSongEdit, currentDragging, setCurrentDragging }) => {
@@ -40,7 +40,7 @@ const SongCastingRow: FC<SongCastingRowProps> = ({ song, disabled, setActiveSong
     return hidden;
   }, [prefs]);
 
-  const getCasting = useCallback((songID: number, inst: CastingInst) => {
+  const getCasting = useCallback((songID: string, inst: CastingInst) => {
     if (!showCast)
       return;
     const student = showCast.find(x => !!x.castings.find(casting => casting.songID === songID && casting.inst === inst));

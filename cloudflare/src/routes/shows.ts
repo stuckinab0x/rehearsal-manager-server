@@ -1,13 +1,5 @@
-import { getProfileShowIDsAndNames, getAllProfileShows, setShow, addShow, setRehearsals } from '../db/functions';
-import { Show } from '../models/show-data';
 
-interface ParsedShow {
-  id: number;
-  name: string;
-  singleArtist: boolean;
-  twoPMRehearsal: boolean;
-  setSplitIndex: number;
-}
+import { ShowProps, ParsedShowProps } from '../models/show-props';
 
 export default async function handleShowsRequest(req: Request<unknown, IncomingRequestCfProperties<unknown>>, db: D1Database): Promise<Response> {
   const url = new URL(req.url);
@@ -18,17 +10,19 @@ export default async function handleShowsRequest(req: Request<unknown, IncomingR
 
   
   if (routePath === '' && req.method === 'GET' && profileID) {
+    const showsResult = await db.prepare(
+      "SELECT id, name FROM shows WHERE profile_id = ?"
+    ).bind(profileID).run<{ id: number, name: string; }>();
 
-    const profileShowIDsAndNames = await getProfileShowIDsAndNames(db, parseInt(profileID));
-    return Response.json(profileShowIDsAndNames);
+    return Response.json(showsResult.results);
   }
       
   if (routePath === '' && req.method === 'GET' && showID) {
     const showsResult = await db.prepare(
     "SELECT id, name, single_artist, two_pm_rehearsal, set_split_index FROM shows WHERE id = ?"
-    ).bind(showID).run<Show>();
+    ).bind(showID).run<ShowProps>();
     const show = showsResult.results[0];
-    const parsedShow: ParsedShow = { id: show.id, name: show.name, singleArtist: show.single_artist === 1, twoPMRehearsal: show.two_pm_rehearsal === 1, setSplitIndex: show.set_split_index };
+    const parsedShow: ParsedShowProps = { id: show.id, name: show.name, singleArtist: show.single_artist === 1, twoPMRehearsal: show.two_pm_rehearsal === 1, setSplitIndex: show.set_split_index };
 
     return Response.json(parsedShow);
   }
@@ -44,25 +38,20 @@ export default async function handleShowsRequest(req: Request<unknown, IncomingR
   // }
 
   if (routePath === '' && req.method === 'POST' && req.body && profileID) {
-    const show: ParsedShow = await req.json();
+    const show: ParsedShowProps = await req.json();
     
     await db.prepare(
       `
-        INSERT INTO shows (name, single_artist, two_pm_rehearsal, set_split_index, profile_id)
-        VALUES (?, ?, ?, ?, ?);
+        INSERT INTO shows (id, name, single_artist, two_pm_rehearsal, set_split_index, profile_id)
+        VALUES (?, ?, ?, ?, ?, ?);
       `
-    ).bind(show.name, show.singleArtist, show.twoPMRehearsal, show.setSplitIndex, profileID).run();
+    ).bind(show.id, show.name, show.singleArtist, show.twoPMRehearsal, show.setSplitIndex, profileID).run();
 
-
-    const newestShowIDResult = await db.prepare(
-        "SELECT MAX(id) FROM shows"
-      ).run<{ "MAX(id)": number; }>();
-
-    return Response.json({ newID: newestShowIDResult.results[0]['MAX(id)'] });
+    return new Response;
   }
   
   if (routePath === '' && req.method === 'PUT' && req.body && profileID) {
-    const show = await req.json<ParsedShow>();
+    const show = await req.json<ParsedShowProps>();
         
     await db.prepare(
       `

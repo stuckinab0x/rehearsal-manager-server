@@ -8,8 +8,8 @@ import MainSelector from './MainSelector';
 interface CastMemberProps {
   student: Student;
   twoPmStart: boolean;
-  activeEdit: number | null;
-  setActiveEdit: (studentID: number| null) => void;
+  activeEdit: string | null;
+  setActiveEdit: (studentID: string | null) => void;
 }
 
 const CastMember: FC<CastMemberProps> = ({ student, twoPmStart, activeEdit, setActiveEdit }) => {

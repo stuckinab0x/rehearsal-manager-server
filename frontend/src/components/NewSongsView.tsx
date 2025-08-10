@@ -35,7 +35,8 @@ const NewSongsView: FC = () => {
   const addSongs = useCallback(() => {
     if (!currentEditingShow)
       return;
-    let songs: Song[] = songInputs.map((x, i) => ({ id: -1, name: x.value, artist: artistInputs[i].value, setOrder: i, color: availableColors[i] })).filter(x => x.name);
+    console.log('hi mom')
+    let songs: Song[] = songInputs.map((x, i) => ({ id: crypto.randomUUID(), name: x.value, artist: artistInputs[i].value, setOrder: i, color: availableColors[i] })).filter(x => x.name);
     if (currentEditingShow.singleArtist)
       songs = songs.map((x, i) => ({ id: x.id, name: x.name, setOrder: i, color: availableColors[i] }))
     addNewShowSongs(songs);

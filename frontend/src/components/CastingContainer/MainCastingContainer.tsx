@@ -11,9 +11,9 @@ const MainCastingContainer: FC = () => {
   const { toolsMode } = useViews();
   const { currentEditingShow, currentCastEdit, reorderSong, showSongs } = useEditor();
   
-  const [activeSongEdit, setActiveSongEdit] = useState<number | null>(null);
+  const [activeSongEdit, setActiveSongEdit] = useState<string | null>(null);
   const [addingSong, setAddingSong] = useState(false);
-  const [currentDragging, setCurrentDragging] = useState<number | null>(null);
+  const [currentDragging, setCurrentDragging] = useState<string | null>(null);
   const [endDragHover, setEndDragHover] = useState(false);
 
   const handleEndDrop = useCallback(() => {
@@ -48,7 +48,7 @@ const MainCastingContainer: FC = () => {
         ))
       }
       { toolsMode && <SongDragDropArea
-        songID={ -1 }
+        songID={ '$$last$$' }
         currentDragging={ currentDragging }
         dragHover={ endDragHover }
         setDragHover={ setEndDragHover }

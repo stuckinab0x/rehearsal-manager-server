@@ -2,8 +2,8 @@ import { FC } from 'react';
 import styled from 'styled-components';
 
 interface SongDragDropAreaProps {
-  songID: number;
-  currentDragging: number | null;
+  songID: string;
+  currentDragging: string | null;
   dragHover: boolean;
   setDragHover: (hover: boolean) => void;
   handleDrop: () => void;

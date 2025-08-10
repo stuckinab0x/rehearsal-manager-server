@@ -1,5 +1,5 @@
 {
-  "name": "rehearsal-manager-server",
+  "name": "rehearsal-manager-cloud",
   "author": "Ian Barr",
   "private": "true",
   "scripts": {
@@ -8,8 +8,6 @@
   },
   "workspaces": [
     "frontend",
-    "server",
-    "migrate-mongo",
     "cloudflare"
   ],
   "dependencies": {

@@ -1,12 +1,4 @@
-import { Song } from "../models/show-data";
-
-interface ParsedSong {
-  id: number;
-  name: string;
-  artist?: string;
-  setOrder: number;
-  color: string;
-}
+import { Song, ParsedSong } from '../models/song';
 
 export default async function handleSongsRequest(req: Request<unknown, IncomingRequestCfProperties<unknown>>, db: D1Database): Promise<Response> {
   const url = new URL(req.url);
@@ -29,7 +21,7 @@ export default async function handleSongsRequest(req: Request<unknown, IncomingR
     const stmts = body.map<D1PreparedStatement>(x => db.prepare(
       `
         INSERT OR REPLACE INTO songs (id, name, artist, set_order, color, show_id)
-        VALUES ((SELECT id FROM songs WHERE id = ?), ?, ?, ?, ?, ?);
+        VALUES (?, ?, ?, ?, ?, ?);
       `
     ).bind(x.id, x.name, x.artist || null, x.setOrder, x.color, showID))
     await db.batch(stmts);

@@ -4,7 +4,7 @@ import { useViews } from '../contexts/views-context';
 import { useProfile } from '../contexts/profile-context';
 
 interface ShowNameAndId {
-  id: number;
+  id: string;
   name: string;
 }
 
@@ -32,7 +32,7 @@ const WelcomeScreen: FC = () => {
     requestShowNames();
   }, []);
 
-  const handleShowClick = useCallback((showID: number) => {
+  const handleShowClick = useCallback((showID: string) => {
     setCurrentShowID(showID);
     setEditorView('showOverview');
   }, [])

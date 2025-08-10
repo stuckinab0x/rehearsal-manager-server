@@ -10,13 +10,13 @@ export default async function handleProfilesRequest(req: Request<unknown, Incomi
   }
 
   if (routePath === '' && req.method === 'POST') {
-    const profileName = await req.json<{ name: string }>();
+    const profile = await req.json<{ id: string, name: string }>();
     await db.prepare(
       `
-        INSERT INTO profiles (name, last_modified)
-        VALUES (?, "");
+        INSERT INTO profiles (id, name, last_modified)
+        VALUES (?, ?, "");
       `
-    ).bind(profileName.name).run();
+    ).bind(profile.id, profile.name).run();
   }
 
   return new Response;

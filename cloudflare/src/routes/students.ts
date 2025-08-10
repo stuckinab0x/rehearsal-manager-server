@@ -1,4 +1,4 @@
-import { Student } from '../models/show-data';
+import { Student } from '../models/student';
 
 interface ParsedStudent {
   id: number;
@@ -12,7 +12,7 @@ const runStudentUpdates = async (students: ParsedStudent[], showID: string, db: 
   const stmts = students.map<D1PreparedStatement>(x => db.prepare(
     `
       INSERT OR REPLACE INTO students (id, name, main, castings, lesson, show_id)
-      VALUES ((SELECT id FROM students WHERE id = ?), ?, ?, ?, ?, ?);
+      VALUES (?, ?, ?, ?, ?, ?);
     `
   ).bind(x.id, x.name, x.main, JSON.stringify(x.castings), x.lesson || null, showID));
   await db.batch(stmts);

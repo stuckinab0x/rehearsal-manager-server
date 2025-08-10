@@ -1,12 +1,4 @@
-import { Rehearsal } from '../models/show-data';
-
-interface ParsedRehearsal {
-  id: number;
-  date: string;
-  absent: string;
-  wereRun: string;
-  todoList: string;
-}
+import { Rehearsal, ParsedRehearsal } from '../models/rehearsal';
 
 export default async function handleRehearsalsRequest(req: Request<unknown, IncomingRequestCfProperties<unknown>>, db: D1Database): Promise<Response> {
   const url = new URL(req.url);
