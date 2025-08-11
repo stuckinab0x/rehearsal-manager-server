@@ -16,6 +16,18 @@ export default async function handleShowsRequest(req: Request<unknown, IncomingR
 
     return Response.json(showsResult.results);
   }
+
+  if (routePath === '/full' && req.method === 'GET' && profileID) {
+    const showsResult = await db.prepare(
+      `
+        SELECT id, name, single_artist, two_pm_rehearsal, set_split_index
+        FROM shows WHERE profile_id = ?
+      `
+    ).bind(profileID).run<ShowProps>();
+    const shows = showsResult.results.map<ParsedShowProps>(x => ({ id: x.id, name: x.name, singleArtist: x.single_artist === 1, twoPMRehearsal: x.two_pm_rehearsal === 1, setSplitIndex: x.set_split_index  }));
+
+    return Response.json(shows);
+  }
       
   if (routePath === '' && req.method === 'GET' && showID) {
     const showsResult = await db.prepare(

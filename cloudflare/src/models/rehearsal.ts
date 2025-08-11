@@ -4,6 +4,7 @@ export interface Rehearsal {
   absent: string;
   were_run: string;
   todo_list: string;
+  show_id: string;
 }
 
 export interface ParsedRehearsal {

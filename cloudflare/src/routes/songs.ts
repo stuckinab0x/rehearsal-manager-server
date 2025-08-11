@@ -4,6 +4,7 @@ export default async function handleSongsRequest(req: Request<unknown, IncomingR
   const url = new URL(req.url);
   const routePath = url.pathname.split('/api/songs')[1];
 
+  const profileID = url.searchParams.get('profileID');
   const showID = url.searchParams.get('showID');
   const songID = url.searchParams.get('songID');
 
@@ -13,6 +14,24 @@ export default async function handleSongsRequest(req: Request<unknown, IncomingR
       ).bind(showID).run<Song>();
     const songs: ParsedSong[] = songsResult.results.map(x => ({ id: x.id, name: x.name, artist: x.artist, setOrder: x.set_order, color: x.color }));
     return Response.json(songs);
+  }
+  
+  if (routePath === '/full' && req.method === 'GET' && profileID) {
+    const showIDsResult = await db.prepare(
+      "SELECT id FROM shows WHERE profile_id = ?"
+    ).bind(profileID).run<{ id: string }>();
+
+    const stmts = showIDsResult.results.map(x => db.prepare(
+        `
+          SELECT id, name, artist, set_order, color, show_id FROM songs
+          WHERE show_id = ?
+        `
+      ).bind(x.id)
+    );
+    const songsResult = await db.batch<Song>(stmts);
+    const allSongs = songsResult.flatMap(x => x.results);
+
+    return Response.json(allSongs);
   }
 
   if (routePath === '' && req.method === 'PUT' && showID) {

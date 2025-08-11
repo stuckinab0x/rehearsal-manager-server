@@ -4,6 +4,7 @@ export interface ShowProps {
   single_artist: number;
   two_pm_rehearsal: number;
   set_split_index: number;
+  profile_id: string;
 }
 
 export interface ParsedShowProps {

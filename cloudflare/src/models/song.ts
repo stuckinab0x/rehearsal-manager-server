@@ -4,6 +4,7 @@ export interface Song {
   artist?: string;
   set_order: number;
   color: string;
+  show_id: string;
 }
 
 export interface ParsedSong {

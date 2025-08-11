@@ -20,5 +20,3 @@ export const setRehearsals = async (db: D1Database, rehearsals: ParsedRehearsal[
 
   await db.batch(rehearsalStatements);
 }
-
-// Profile methods
