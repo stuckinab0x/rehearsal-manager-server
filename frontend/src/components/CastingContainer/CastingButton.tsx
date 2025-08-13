@@ -15,8 +15,8 @@ const CastingButton: FC<CastingButtonProps> = ({ assignedStudent, disabled, star
     <ButtonMain onClick={ startCasting } $disabled={ disabled } $highlighted={ highlightedStudent === assignedStudent }>
       <h4>{ assignedStudent }</h4>
     </ButtonMain>
-  )
-}
+  );
+};
 
 interface ButtonMainProps {
   $disabled: boolean;

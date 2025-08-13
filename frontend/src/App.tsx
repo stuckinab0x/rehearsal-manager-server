@@ -1,12 +1,12 @@
-import { FC } from 'react'
-import styled, { createGlobalStyle, ThemeProvider } from 'styled-components'
-import theme from './styles/Theme'
-import Nav from './components/Nav'
-import EditorView from './components/EditorView'
-import EditorProvider from './contexts/editor-context'
-import ProfileProvider from './contexts/profile-context'
-import ViewsProvider from './contexts/views-context'
-import SWRProvider from './providers/SWRProvider'
+import { FC } from 'react';
+import styled, { createGlobalStyle, ThemeProvider } from 'styled-components';
+import theme from './styles/Theme';
+import Nav from './components/Nav';
+import EditorView from './components/EditorView';
+import EditorProvider from './contexts/editor-context';
+import ProfileProvider from './contexts/profile-context';
+import ViewsProvider from './contexts/views-context';
+import SWRProvider from './providers/SWRProvider';
 
 const GlobalStyle = createGlobalStyle`
   html, body {
@@ -49,15 +49,15 @@ const App: FC = () => {
         </ProfileProvider>
       </SWRProvider>
     </ThemeProvider>
-  )
-}
+  );
+};
 
 const Main = styled.div`
   display: flex;
   flex-direction: column;
   margin: 0;
   flex: 1;
-`
+`;
 
 const Content = styled.div`
   display: flex;
@@ -73,4 +73,4 @@ const EditorContainer = styled.div`
   padding: 15px 20px;
 `;
 
-export default App
+export default App;

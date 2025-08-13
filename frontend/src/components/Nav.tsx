@@ -9,7 +9,7 @@ const Nav: FC = () => {
   const { setEditorView } = useViews();
   const { currentEditingShow } = useEditor();
 
-    return (
+  return (
     <NavMain>
       <div>
         <h1>Rehearsal Manager</h1>
@@ -21,8 +21,8 @@ const Nav: FC = () => {
       </div>
       { currentProfile && <ProfileName onClick={ () => setEditorView('profiles') }>Profile: { currentProfile.name }</ProfileName> }
     </NavMain>
-    )
-}
+  );
+};
 const NavMain = styled.div`
   display: flex;
   align-items: center;

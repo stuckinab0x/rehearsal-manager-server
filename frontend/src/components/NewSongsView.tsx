@@ -35,10 +35,10 @@ const NewSongsView: FC = () => {
   const addSongs = useCallback(() => {
     if (!currentEditingShow)
       return;
-    console.log('hi mom')
+
     let songs: Song[] = songInputs.map((x, i) => ({ id: crypto.randomUUID(), name: x.value, artist: artistInputs[i].value, setOrder: i, color: availableColors[i] })).filter(x => x.name);
     if (currentEditingShow.singleArtist)
-      songs = songs.map((x, i) => ({ id: x.id, name: x.name, setOrder: i, color: availableColors[i] }))
+      songs = songs.map((x, i) => ({ id: x.id, name: x.name, setOrder: i, color: availableColors[i] }));
     addNewShowSongs(songs);
     if (newShowStatus === 'castWasAdded') {
       setEditorView('showOverview');
@@ -83,8 +83,8 @@ const NewSongsView: FC = () => {
           </h3>
         </DoneButton>
       </ViewMain>
-    )
-}
+    );
+};
 
 const ViewMain = styled.div`
   display: flex;

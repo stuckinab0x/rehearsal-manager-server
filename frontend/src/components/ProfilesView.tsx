@@ -9,21 +9,21 @@ const ProfilesView: FC = () => {
   const [creatingNew, setCreatingNew] = useState(false);
 
   if (!profiles)
-  return (
-    <ViewMain>
-      <h2>Waiting for profiles...</h2>
-    </ViewMain>
-  )
+    return (
+      <ViewMain>
+        <h2>Waiting for profiles...</h2>
+      </ViewMain>
+    );
 
   return (
     <ViewMain>
       { !creatingNew && <>
         <h2>{ profiles.length ? 'Existing profiles' : 'No Profiles Found' }</h2>
         { profiles.length > 0 && profiles.map(x => 
-        <Button key={ x.id } onClick={ () => setProfileAndReload(x) }>
-          <h2>{ x.name }</h2>
-        </Button>
-      )}
+          <Button key={ x.id } onClick={ () => setProfileAndReload(x) }>
+            <h2>{ x.name }</h2>
+          </Button>
+        )}
         <Divider />
         <Button onClick={ () => setCreatingNew(true) }>
           <h2>New Profile</h2>
@@ -40,8 +40,8 @@ const ProfilesView: FC = () => {
       </>
       }
     </ViewMain>
-  )
-}
+  );
+};
 
 const ViewMain = styled.div`
   display: flex;

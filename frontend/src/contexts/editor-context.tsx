@@ -94,7 +94,7 @@ const EditorProvider: FC<EditorProviderProps> = ({ children }) => {
 
   const discardCastEdit = useCallback(() => setCurrentCastEdit(null), []);
 
-  const unAssignCasting = useCallback(() => {
+  const unAssignCasting = useCallback(async () => {
     if (!currentEditingShow || !currentCastEdit || !showCast)
       return;
 
@@ -105,16 +105,16 @@ const EditorProvider: FC<EditorProviderProps> = ({ children }) => {
     const newStudent: Student = { ...oldStudent, castings: oldStudent.castings.filter(x => !(x.inst === currentCastEdit.inst && x.songID === currentCastEdit.songID)) };
     const newCast = showCast.toSpliced(showCast.findIndex(x => x === oldStudent), 1, newStudent);
   
-    mutateCast(() => { updateResourceRequest([newStudent], currentEditingShow.id, 'students'); return newCast }, { optimisticData: newCast, rollbackOnError: true });
+    await mutateCast(async () => { await updateResourceRequest([newStudent], currentEditingShow.id, 'students'); return newCast; }, { optimisticData: newCast, rollbackOnError: true });
   }, [currentEditingShow?.id, currentCastEdit, showCast]);
 
-  const clearAndCloseCasting = useCallback(() => {
-    unAssignCasting();
+  const clearAndCloseCasting = useCallback(async () => {
+    await unAssignCasting();
     setCurrentCastEdit(null);
   }, [unAssignCasting]);
 
-  const assignCasting = useCallback((studentID: string) => {
-    unAssignCasting()
+  const assignCasting = useCallback(async (studentID: string) => {
+    await unAssignCasting();
     if (!currentEditingShow || !currentCastEdit || !showCast)
       return;
     
@@ -125,25 +125,25 @@ const EditorProvider: FC<EditorProviderProps> = ({ children }) => {
     const newStudent: Student = { ...oldStudent, castings: [...oldStudent.castings, { songID: currentCastEdit?.songID, inst: currentCastEdit?.inst }] };
     const newCast = showCast.toSpliced(showCast.findIndex(x => x === oldStudent), 1, newStudent);
 
-    mutateCast(() => { updateResourceRequest([newStudent], currentEditingShow.id, 'students'); return newCast }, { optimisticData: newCast, rollbackOnError: true });
+    await mutateCast(async () => { await updateResourceRequest([newStudent], currentEditingShow.id, 'students'); return newCast; }, { optimisticData: newCast, rollbackOnError: true });
     setCurrentCastEdit(null);
   }, [currentEditingShow?.id, currentCastEdit, unAssignCasting, showCast]);
 
-  const addStudent = useCallback((newStudent: Student) => {
+  const addStudent = useCallback(async (newStudent: Student) => {
     if (!currentEditingShow || !showCast || showCast?.some(x => x.name === newStudent.name))
       return;
 
-    mutateCast(() => { updateResourceRequest([newStudent], currentEditingShow.id, 'students'); return [...showCast, newStudent] })
+    await mutateCast(async () => { await updateResourceRequest([newStudent], currentEditingShow.id, 'students'); return [...showCast, newStudent]; });
   }, [currentEditingShow?.id, showCast]);
 
-  const addNewCastStudents = useCallback((newStudents: Student[]) => {
+  const addNewCastStudents = useCallback(async (newStudents: Student[]) => {
     if (!currentEditingShow)
       return;
 
-    mutateCast(() => { updateResourceRequest(newStudents, currentEditingShow.id, 'students'); return newStudents }, { optimisticData: newStudents })
-  }, [currentEditingShow?.id])
+    await mutateCast(async () => { await updateResourceRequest(newStudents, currentEditingShow.id, 'students'); return newStudents; }, { optimisticData: newStudents });
+  }, [currentEditingShow?.id]);
 
-  const updateStudentInfo = useCallback((studentID: string, studentInfo: StudentInfoOptions) => {
+  const updateStudentInfo = useCallback(async (studentID: string, studentInfo: StudentInfoOptions) => {
     if (!currentEditingShow || !showCast)
       return;
     const oldStudent = showCast.find(x => x.id === studentID);
@@ -153,10 +153,10 @@ const EditorProvider: FC<EditorProviderProps> = ({ children }) => {
     const newStudent: Student = { ...oldStudent, name: studentInfo.name, lesson: studentInfo.lesson, main: studentInfo.main };
     const newCast = showCast.toSpliced(showCast.findIndex(x => x === oldStudent), 1, newStudent);
 
-    mutateCast(() => { updateResourceRequest([newStudent], currentEditingShow.id, 'students'); return newCast; }, { optimisticData: newCast, rollbackOnError: true });
+    await mutateCast(async () => { await updateResourceRequest([newStudent], currentEditingShow.id, 'students'); return newCast; }, { optimisticData: newCast, rollbackOnError: true });
   }, [currentEditingShow?.id, showCast]);
 
-  const deleteStudent = useCallback((studentID: string) => {
+  const deleteStudent = useCallback(async (studentID: string) => {
     if (!showCast)
       return;
     
@@ -164,12 +164,12 @@ const EditorProvider: FC<EditorProviderProps> = ({ children }) => {
 
     const deleteStudentRequest = async () => {
       await fetch(`/api/students?studentID=${ studentID }`, { method: 'DELETE' });
-    }
+    };
 
-    mutateCast(() => { deleteStudentRequest(); return newCast }, { optimisticData: newCast, rollbackOnError: true });
+    await mutateCast(async () => { await deleteStudentRequest(); return newCast; }, { optimisticData: newCast, rollbackOnError: true });
   }, [showCast]);
 
-  const addSong = useCallback((name: string, artist?: string) => {
+  const addSong = useCallback(async (name: string, artist?: string) => {
     if (!currentEditingShow || !showSongs)
       return;
 
@@ -177,17 +177,17 @@ const EditorProvider: FC<EditorProviderProps> = ({ children }) => {
 
     const newSongs = [...showSongs, newSong];
     
-    mutateSongs(() => { updateResourceRequest([newSong], currentEditingShow.id, 'songs'); return newSongs }, { optimisticData: newSongs, rollbackOnError: true });
+    await mutateSongs(async () => { await updateResourceRequest([newSong], currentEditingShow.id, 'songs'); return newSongs; }, { optimisticData: newSongs, rollbackOnError: true });
   }, [currentEditingShow?.id, showCast, availableColors]);
 
-  const addNewShowSongs = useCallback((newSongs: Song[]) => {
+  const addNewShowSongs = useCallback(async (newSongs: Song[]) => {
     if (!currentEditingShow)
       return;
 
-    mutateSongs(() => { updateResourceRequest(newSongs, currentEditingShow.id, 'songs'); return newSongs }, { optimisticData: newSongs, rollbackOnError: true });
+    await mutateSongs(async () => { await updateResourceRequest(newSongs, currentEditingShow.id, 'songs'); return newSongs; }, { optimisticData: newSongs, rollbackOnError: true });
   }, [currentEditingShow]);
 
-  const renameSong = useCallback((songID: string, newName: string, newArtist?: string) => {
+  const renameSong = useCallback(async (songID: string, newName: string, newArtist?: string) => {
     if (!currentEditingShow || !showSongs)
       return;
 
@@ -199,10 +199,10 @@ const EditorProvider: FC<EditorProviderProps> = ({ children }) => {
 
     const newSongs = showSongs.toSpliced(showSongs.findIndex(x => x === oldSong), 1, newSong);
 
-    mutateSongs(() => { updateResourceRequest([newSong], currentEditingShow.id, 'songs'); return newSongs }, { optimisticData: newSongs, rollbackOnError: true });
+    await mutateSongs(async () => { await updateResourceRequest([newSong], currentEditingShow.id, 'songs'); return newSongs; }, { optimisticData: newSongs, rollbackOnError: true });
   }, [currentEditingShow?.id, showSongs]);
 
-  const reorderSong = useCallback((movedSongId: string, target: number) => {
+  const reorderSong = useCallback(async (movedSongId: string, target: number) => {
     if (!showSongs || !currentEditingShow)
       return;
     
@@ -214,27 +214,27 @@ const EditorProvider: FC<EditorProviderProps> = ({ children }) => {
 
     const newOrderedSongs: Song[] = newSongs.toSpliced(newSetOrder, 0, moved).map((x, i) => ({ ...x, setOrder: i }));
 
-    mutateSongs(() => { updateResourceRequest(newOrderedSongs, currentEditingShow?.id, 'songs'); return newOrderedSongs }, { optimisticData: newOrderedSongs, rollbackOnError: true });
+    await mutateSongs(async () => { await updateResourceRequest(newOrderedSongs, currentEditingShow?.id, 'songs'); return newOrderedSongs; }, { optimisticData: newOrderedSongs, rollbackOnError: true });
   }, [currentEditingShow?.id, showSongs]);
 
-  const deleteSong = useCallback((songID: string) => {
+  const deleteSong = useCallback(async (songID: string) => {
     if (!currentEditingShow || !showSongs)
       return;
 
-    const newSongs = showSongs.filter(x => x.id !== songID).toSorted((a, b) => a.setOrder - b.setOrder).map((x, i) => ({ ...x, setOrder: i }))
+    const newSongs = showSongs.filter(x => x.id !== songID).toSorted((a, b) => a.setOrder - b.setOrder).map((x, i) => ({ ...x, setOrder: i }));
 
     const deleteSongRequest = async () => {
       await fetch(`/api/songs?songID=${ songID }`, { method: 'DELETE' });
-    }
+    };
 
-    mutateSongs(() => { deleteSongRequest(); return newSongs }, { optimisticData: newSongs, rollbackOnError: true });
+    await mutateSongs(async () => { await deleteSongRequest(); return newSongs; }, { optimisticData: newSongs, rollbackOnError: true });
 
     if (newSongs.length) {
-      mutateSongs(() => { updateResourceRequest(newSongs, currentEditingShow.id, 'songs'); return newSongs }, { optimisticData: newSongs, rollbackOnError: true });
+      await mutateSongs(async () => { await updateResourceRequest(newSongs, currentEditingShow.id, 'songs'); return newSongs; }, { optimisticData: newSongs, rollbackOnError: true });
     }
   }, [currentEditingShow?.id, showSongs]);
 
-  const saveSetListSplitIndex = useCallback((setSplitIndex: number) => {
+  const saveSetListSplitIndex = useCallback(async (setSplitIndex: number) => {
     if (!currentEditingShow)
       return;
 
@@ -248,7 +248,7 @@ const EditorProvider: FC<EditorProviderProps> = ({ children }) => {
       });
     };
 
-    mutateCurrentShow(() => { updateShowRequest(); return newShow }, { optimisticData: newShow, rollbackOnError: true });
+    await mutateCurrentShow(async () => { await updateShowRequest(); return newShow; }, { optimisticData: newShow, rollbackOnError: true });
   }, [currentEditingShow, currentProfile?.id]);
 
   const context = useMemo(() => ({
@@ -278,33 +278,33 @@ const EditorProvider: FC<EditorProviderProps> = ({ children }) => {
     saveSetListSplitIndex,
     availableColors,
   }),
-    [
-      singleArtist,
-      setSingleArtist,
-      currentEditingShow,
-      showSongs,
-      showCast,
-      newShowStatus,
-      setNewShowStatus,
-      currentCastEdit,
-      highlightedStudent,
-      setHighlightedStudent,
-      setCastEdit,
-      discardCastEdit,
-      assignCasting,
-      clearAndCloseCasting,
-      addStudent,
-      addNewCastStudents,
-      updateStudentInfo,
-      deleteStudent,
-      addSong,
-      addNewShowSongs,
-      renameSong,
-      reorderSong,
-      deleteSong,
-      saveSetListSplitIndex,
-      availableColors,
-    ]);
+  [
+    singleArtist,
+    setSingleArtist,
+    currentEditingShow,
+    showSongs,
+    showCast,
+    newShowStatus,
+    setNewShowStatus,
+    currentCastEdit,
+    highlightedStudent,
+    setHighlightedStudent,
+    setCastEdit,
+    discardCastEdit,
+    assignCasting,
+    clearAndCloseCasting,
+    addStudent,
+    addNewCastStudents,
+    updateStudentInfo,
+    deleteStudent,
+    addSong,
+    addNewShowSongs,
+    renameSong,
+    reorderSong,
+    deleteSong,
+    saveSetListSplitIndex,
+    availableColors,
+  ]);
 
   return (
     <EditorContext.Provider value={ context }>

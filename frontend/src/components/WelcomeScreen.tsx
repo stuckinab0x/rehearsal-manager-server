@@ -1,7 +1,8 @@
-import { FC, useState, useEffect, useCallback } from 'react';
+import { FC, useEffect, useCallback } from 'react';
 import styled from 'styled-components';
 import { useViews } from '../contexts/views-context';
 import { useProfile } from '../contexts/profile-context';
+import useSWR from 'swr';
 
 interface ShowNameAndId {
   id: string;
@@ -12,48 +13,36 @@ const WelcomeScreen: FC = () => {
   const { setEditorView } = useViews();
   const { profiles, currentProfile, setCurrentShowID } = useProfile();
 
-  const [showNamesAndIds, setShowNamesAndIds] = useState<ShowNameAndId[] | undefined>();
+  const { data: showNamesAndIDs } = useSWR<ShowNameAndId[]>(`/api/shows?profileID=${ currentProfile?.id }`);
 
   useEffect(() => {
     if (profiles && !currentProfile)
       setEditorView('profiles');
   }, [profiles, currentProfile]);
 
-  useEffect(() => {
-    const requestShowNames = async () => {
-      try {
-        const res = await fetch(`/api/shows?profileID=${ currentProfile?.id }`);
-        const shows: ShowNameAndId[] = await res.json();
-          setShowNamesAndIds(shows);
-      } catch (error) {
-        console.log(error);
-      }
-    }
-    requestShowNames();
-  }, []);
-
   const handleShowClick = useCallback((showID: string) => {
     setCurrentShowID(showID);
     setEditorView('showOverview');
-  }, [])
+  }, []);
 
-  return (
-    <ViewMain>
-      <h1>
+  if (showNamesAndIDs)
+    return (
+      <ViewMain>
+        <h1>
         Create/Edit Shows:
-      </h1>
-      { showNamesAndIds && <ShowsList>
-        { showNamesAndIds.map(x => <Button key={ x.id } onClick={ () => handleShowClick(x.id) }>
-          <h2>{ x.name }</h2>
-        </Button>) }
-      </ShowsList> }
-      <Divider />
-      <Button onClick={ () => setEditorView('newShow') }>
-        <h2>Create New Show</h2>
-      </Button>
-    </ViewMain>
-  )
-}
+        </h1>
+        { showNamesAndIDs && <ShowsList>
+          { showNamesAndIDs.map(x => <Button key={ x.id } onClick={ () => handleShowClick(x.id) }>
+            <h2>{ x.name }</h2>
+          </Button>) }
+        </ShowsList> }
+        <Divider />
+        <Button onClick={ () => setEditorView('newShow') }>
+          <h2>Create New Show</h2>
+        </Button>
+      </ViewMain>
+    );
+};
 
 const ViewMain = styled.div`
   display: flex;

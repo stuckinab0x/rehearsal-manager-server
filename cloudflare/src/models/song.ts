@@ -14,3 +14,7 @@ export interface ParsedSong {
   setOrder: number;
   color: string;
 }
+
+export interface ParsedShowSong extends ParsedSong {
+  showID: string;
+}

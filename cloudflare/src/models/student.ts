@@ -8,3 +8,7 @@ export interface ParsedStudent {
 export interface Student extends ParsedStudent {
   show_id: string;
 }
+
+export interface ParsedShowStudent extends ParsedStudent {
+  showID: string;
+}

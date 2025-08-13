@@ -1,6 +1,5 @@
 export default interface ProfileSummary {
-  profileName: string;
-  lastModified: Date;
+  lastModified: string;
   shows: ShowBackupInfo[];
 }
 

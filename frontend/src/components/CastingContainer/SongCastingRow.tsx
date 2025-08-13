@@ -102,8 +102,8 @@ const SongCastingRow: FC<SongCastingRowProps> = ({ song, disabled, setActiveSong
             $toolsMode={ toolsMode && !editingName && !deleting }>
             { toolsMode && !editingName && !deleting
             && <div>
-              <span className='material-symbols-outlined' onClick={ () => { setEditingName(true); setActiveSongEdit(song.id) } } >edit</span>
-              <span className='material-symbols-outlined' onClick={ () => { setDeleting(true); setActiveSongEdit(song.id) } } >delete</span>
+              <span className='material-symbols-outlined' onClick={ () => { setEditingName(true); setActiveSongEdit(song.id); } } >edit</span>
+              <span className='material-symbols-outlined' onClick={ () => { setDeleting(true); setActiveSongEdit(song.id); } } >delete</span>
             </div> }
             { editingName && <h3>Rename: </h3>}
             <h3>{ song.name }{ song.artist && ` - ${ song.artist }` }</h3>
@@ -120,13 +120,13 @@ const SongCastingRow: FC<SongCastingRowProps> = ({ song, disabled, setActiveSong
               { !currentEditingShow?.singleArtist && <NameInput type='text' autoFocus value={ artistInput } onChange={ event => setArtistInput(event.currentTarget.value) }  /> }
             </div>
           }
-          { toolsMode && (editingName || deleting) && <ActionButton onClick={ () => { setEditingName(false); setDeleting(false); setActiveSongEdit(null) } }><h3>{ deleting ? 'Cancel' : 'Discard Changes' }</h3></ActionButton> }
+          { toolsMode && (editingName || deleting) && <ActionButton onClick={ () => { setEditingName(false); setDeleting(false); setActiveSongEdit(null); } }><h3>{ deleting ? 'Cancel' : 'Discard Changes' }</h3></ActionButton> }
           { !editingName && !deleting && ALL_CAST_INST.filter(x => !hidden.includes(x)).map(inst => <CastingButton key={ inst } disabled={ toolsMode } assignedStudent={ getCasting(song.id, inst) } startCasting={ () => setCastEdit(song.id, inst) } />) }
         </div>
       </RowMain>
-    )
+    );
   return null;
-}
+};
 
 interface RowProps {
   $disabled: boolean;

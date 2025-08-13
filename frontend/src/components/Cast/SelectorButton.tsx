@@ -12,8 +12,8 @@ const SelectorButton: FC<SelectorButtonProps> = ({ active, value, select }) => {
     <ButtonMain onClick={ select } $orange={ active }>
       <h3>{ value }</h3>
     </ButtonMain>
-  )
-}
+  );
+};
 
 interface ButtonProps {
   $orange: boolean;

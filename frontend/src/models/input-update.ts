@@ -1,3 +1,5 @@
-type InputUpdate = { value: string, id: number };
-
-export default InputUpdate;
+export default interface InputUpdate
+{ 
+  value: string;
+  id: number;
+};

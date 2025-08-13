@@ -13,8 +13,8 @@ const AllCast: FC = () => {
         <h3>Click a student to highlight their songs</h3>
         <div>{ ALL_INSTRUMENTS.map(x => <AllCastColumn key={ x } instrument={ x } students={ showCast.filter(student => student.main === x).map(student => student.name) } />) }</div>
       </AllCastMain>
-    )
-}
+    );
+};
 
 const AllCastMain = styled.div`
   display: flex;

@@ -14,29 +14,29 @@ const NewShowView: FC = () => {
 
   return (
     <ViewMain>
-        <Section>
-          <h2>What's the show's name?</h2>
-          { editingName && <input type='text' value={ nameInput } onChange={ event => setNameInput(event.currentTarget.value) } />}
-          <Button $orange $fade={ !nameInput } $fontLarge={ !editingName } onClick={ () => setEditingName(nameInput ? !editingName : true) }>
-            { editingName ? 'Ok' : nameInput }
-          </Button>
-        </Section>
-        { !editingName && 
+      <Section>
+        <h2>What's the show's name?</h2>
+        { editingName && <input type='text' value={ nameInput } onChange={ event => setNameInput(event.currentTarget.value) } />}
+        <Button $orange $fade={ !nameInput } $fontLarge={ !editingName } onClick={ () => setEditingName(nameInput ? !editingName : true) }>
+          { editingName ? 'Ok' : nameInput }
+        </Button>
+      </Section>
+      { !editingName && 
         <Section>
           <ShowTypeContainer>
             <h2>Is the show for a single band/artist?</h2>
             <h4>(we won't bother using artist names later if there's only one)</h4>
             <div>
-            <Button $orange={ singleArtist === 1 } onClick={ () => setSingleArtist(1) }>
+              <Button $orange={ singleArtist === 1 } onClick={ () => setSingleArtist(1) }>
               Single artist
-            </Button>
-            <Button $orange={ singleArtist === 2 } onClick={ () => setSingleArtist(2) }>
+              </Button>
+              <Button $orange={ singleArtist === 2 } onClick={ () => setSingleArtist(2) }>
               At least 2 artists
-            </Button>
+              </Button>
             </div>
           </ ShowTypeContainer>
         </Section> }
-        { !editingName && singleArtist !== 0 &&
+      { !editingName && singleArtist !== 0 &&
           <Section>
             <ShowTypeContainer>
               <h2>What time do rehearsals start?</h2>
@@ -51,23 +51,23 @@ const NewShowView: FC = () => {
               </div>
             </ShowTypeContainer>
           </Section>
-        }
-        { !editingName && singleArtist !== 0 && startsAtTwo !== 0 &&
+      }
+      { !editingName && singleArtist !== 0 && startsAtTwo !== 0 &&
             <Section>
               <h2>Okay, let's add songs/cast members</h2>
               <div>
-                <Button onClick={ () => { initializeShow(nameInput, singleArtist === 1, startsAtTwo === 2); setEditorView('newShowCast') } }>
+                <Button onClick={ () => { initializeShow(nameInput, singleArtist === 1, startsAtTwo === 2); setEditorView('newShowCast'); } }>
                   Add Cast Members
                 </Button>
-                <Button onClick={ () => { initializeShow(nameInput, singleArtist === 1, startsAtTwo === 2); setEditorView('newShowSongs') } }>
+                <Button onClick={ () => { initializeShow(nameInput, singleArtist === 1, startsAtTwo === 2); setEditorView('newShowSongs'); } }>
                   Add Songs
                 </Button>
               </div>
             </Section>
-          }
+      }
     </ViewMain>
-  )
-}
+  );
+};
 
 const ViewMain = styled.div`
   display: flex;

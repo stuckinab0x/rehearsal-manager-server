@@ -14,3 +14,7 @@ export interface ParsedRehearsal {
   wereRun: string;
   todoList: string;
 }
+
+export interface ParsedShowRehearsal extends ParsedRehearsal {
+  showID: string;
+}

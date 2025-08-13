@@ -25,7 +25,7 @@ const CastMember: FC<CastMemberProps> = ({ student, twoPmStart, activeEdit, setA
   const handleDeleteConfirm = useCallback(() => {
     if (!activeEdit)
       return;
-    deleteStudent(activeEdit)
+    deleteStudent(activeEdit);
     setActiveEdit(null);
     setDeleting(false);
   }, [setActiveEdit, deleteStudent, activeEdit]);
@@ -35,7 +35,7 @@ const CastMember: FC<CastMemberProps> = ({ student, twoPmStart, activeEdit, setA
       { activeEdit !== student.id && <>
         <div>
           <span className='material-symbols-outlined' onClick={ () => setActiveEdit(student.id) }>edit</span>
-          <span className='material-symbols-outlined' onClick={ () => { setActiveEdit(student.id); setDeleting(true) } }>delete</span>
+          <span className='material-symbols-outlined' onClick={ () => { setActiveEdit(student.id); setDeleting(true); } }>delete</span>
           <h3>{ student.name }</h3>
         </div>
         <LessonSelector student={ student } twoPmStart={ twoPmStart } />
@@ -46,7 +46,7 @@ const CastMember: FC<CastMemberProps> = ({ student, twoPmStart, activeEdit, setA
           <h3>Confirm</h3>
         </ConfirmButton>
         <NameInput autoFocus value={ nameInput } onChange={ event => setNameInput(event.currentTarget.value) } />
-        <ActionButton onClick={ () => { setActiveEdit(null); setNameInput(student.name) } }>
+        <ActionButton onClick={ () => { setActiveEdit(null); setNameInput(student.name); } }>
           <h3>Discard Changes</h3>
         </ActionButton>
       </> }
@@ -61,8 +61,8 @@ const CastMember: FC<CastMemberProps> = ({ student, twoPmStart, activeEdit, setA
       </>
       }
     </CastMemberMain>
-  )
-}
+  );
+};
 
 interface CastMemberMainProps {
   $disabled: boolean;

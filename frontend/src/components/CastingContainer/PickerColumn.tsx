@@ -23,8 +23,8 @@ const PickerColumn: FC<PickerColumnProps> = ({ instrument, castMembers }) => {
           </CastMember>)
       }
     </Column>
-  )
-}
+  );
+};
 
 const Column = styled.div`
   display: flex;

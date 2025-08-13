@@ -8,11 +8,11 @@ const getLocalCurrentProfile = () => {
   const loaded = localStorage.getItem('currentProfile');
   if (!loaded)
     return undefined;
-  const data = JSON.parse(loaded);
-  if (!data.id || !data.name)
+  const data: Profile | undefined = JSON.parse(loaded);
+  if (!data?.id || !data?.name)
     return undefined;
-  return data as Profile;
-}
+  return data;
+};
 
 const addShowRequest = async (showProps: ShowProps, profileID: string) => {
   await fetch(`/api/shows?profileID=${ profileID }`, {
@@ -20,7 +20,7 @@ const addShowRequest = async (showProps: ShowProps, profileID: string) => {
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(showProps),
   });
-}
+};
       
 
 interface ProfileContextProps {
@@ -72,7 +72,7 @@ const ProfileProvider: FC<ProfileProviderProps> = ({ children }) => {
     if (!local)
       return;
 
-    const foundProfile = profiles.find(x => x.id === local.id && x.name === local.name)
+    const foundProfile = profiles.find(x => x.id === local.id && x.name === local.name);
     if (foundProfile)
       setCurrentProfile(foundProfile);
   }, [profiles]);
@@ -102,14 +102,14 @@ const ProfileProvider: FC<ProfileProviderProps> = ({ children }) => {
     const storagePrefs = localStorage.getItem('prefs');
     if (!storagePrefs)
       return setPrefs({ hideGuitar3: false, hideKeys3: false, hideExtras: false });
-    const loadedPrefs = JSON.parse(storagePrefs);
+    const loadedPrefs: Prefs = JSON.parse(storagePrefs);
     return setPrefs(loadedPrefs);
   }, []);
 
   useEffect(() => {
     if (!prefs)
       return;
-    localStorage.setItem('prefs', JSON.stringify(prefs))
+    localStorage.setItem('prefs', JSON.stringify(prefs));
   }, [prefs]);
 
   const newProfileRequest = useCallback(async (name: string) => {

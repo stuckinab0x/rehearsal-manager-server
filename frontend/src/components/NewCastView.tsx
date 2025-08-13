@@ -23,12 +23,12 @@ const NewCastView: FC = () => {
       const newInputs = [...oldState];
       newInputs[index] = { ...newInputs[index], value: input.value };
       return newInputs;
-    })
+    });
   }, []);
 
   const addAnotherInput = useCallback((arraySetter: React.Dispatch<SetStateAction<InputUpdate[]>>) => {
     arraySetter(oldState => [...oldState, { value: '', id: oldState.length }]);
-  }, [])
+  }, []);
 
   const potentialCastList = useMemo(() => {
     return [...mapInputs(guitarInputs, 'Guitar'), ...mapInputs(bassInputs, 'Bass'), ...mapInputs(drumInputs, 'Drums'), ...mapInputs(keysInputs, 'Keys'), ...mapInputs(voxInputs, 'Vocals')].filter(x => x.name);
@@ -41,7 +41,7 @@ const NewCastView: FC = () => {
       return 'Fix duplicate names';
     if (newShowStatus === 'songsWereAdded')
       return 'Next - Casting/Overview';
-    return 'Next - Add Songs'
+    return 'Next - Add Songs';
   }, [potentialCastList, newShowStatus]);
 
   const addCast = useCallback(() => {
@@ -56,7 +56,7 @@ const NewCastView: FC = () => {
       setNewShowStatus('castWasAdded');
       setEditorView('newShowSongs');
     }
-  }, [potentialCastList, currentEditingShow, newShowStatus, setNewShowStatus, setEditorView])
+  }, [potentialCastList, currentEditingShow, newShowStatus, setNewShowStatus, setEditorView]);
 
   const instrumentSectionProps = useMemo(() => [
     { instName: 'Guitar', inputs: guitarInputs, setter: setGuitarInputs },
@@ -64,7 +64,7 @@ const NewCastView: FC = () => {
     { instName: 'Drums', inputs: drumInputs, setter: setDrumInputs },
     { instName: 'Keys', inputs: keysInputs, setter: setKeysInputs },
     { instName: 'Vocals', inputs: voxInputs, setter: setVoxInputs },
-  ], [guitarInputs, bassInputs, drumInputs, keysInputs, voxInputs])
+  ], [guitarInputs, bassInputs, drumInputs, keysInputs, voxInputs]);
 
   if (currentEditingShow)
     return (
@@ -92,8 +92,8 @@ const NewCastView: FC = () => {
           </h3>
         </DoneButton>
       </ViewMain>
-    )
-}
+    );
+};
 
 const ViewMain = styled.div`
   display: flex;

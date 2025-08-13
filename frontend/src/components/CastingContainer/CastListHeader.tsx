@@ -25,7 +25,7 @@ const CastListHeader: FC<CastListHeaderProps> = ({ showName, disabled }) => {
     if (prefs.hideExtras)
       hidden.push('bgVox3');
     return hidden;
-  }, [prefs])
+  }, [prefs]);
 
   if (hidden)
     return (
@@ -40,7 +40,7 @@ const CastListHeader: FC<CastListHeaderProps> = ({ showName, disabled }) => {
           </InstrumentHeader>)}
       </HeaderMain>
     );
-}
+};
 
 interface HeaderProps {
   $disabled: boolean;
@@ -71,6 +71,12 @@ const InstrumentHeader = styled.div`
   width: 100px;
 `;
 
+const cornerActiveStyle = css`
+  animation: pulse 5s infinite;
+  cursor: pointer;
+  justify-content: center;
+`;
+
 interface CornerTileProps {
   $active: boolean;
 }
@@ -87,13 +93,7 @@ const CornerTile = styled(InstrumentHeader)<CornerTileProps>`
     color: white;
   }
 
-  ${ props => props.$active
-    && css`
-      animation: pulse 5s infinite;
-      cursor: pointer;
-      justify-content: center;
-    `
-  }
+  ${ props => props.$active && cornerActiveStyle }
 
   @keyframes pulse {
     0% {

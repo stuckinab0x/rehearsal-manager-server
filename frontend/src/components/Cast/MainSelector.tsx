@@ -15,8 +15,8 @@ const MainSelector: FC<MainSelectorProps> = ({ student }) => {
     <Selector>
       { ALL_INSTRUMENTS.map(x => <SelectorButton key={ x } select={ () => updateStudentInfo(student.id, { name: student.name, lesson: student.lesson, main: x  }) } value={ x } active={ student.main === x } />) }
     </Selector>
-  )
-}
+  );
+};
 
 const Selector = styled.div`
   display: flex;

@@ -14,8 +14,8 @@ const ShowOverview: FC = () => {
       { currentCastEdit && <CastingPicker /> }
       <AllCast />
     </OverviewMain>
-  )
-}
+  );
+};
 
 const OverviewMain = styled.div`
   display: flex;

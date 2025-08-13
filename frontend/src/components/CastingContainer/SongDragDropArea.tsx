@@ -1,4 +1,4 @@
-import { FC } from 'react';
+import { FC, useCallback } from 'react';
 import styled from 'styled-components';
 
 interface SongDragDropAreaProps {
@@ -10,17 +10,25 @@ interface SongDragDropAreaProps {
   last?: boolean;
 }
 
-const SongDragDropArea: FC<SongDragDropAreaProps> = ({ songID, currentDragging, dragHover, setDragHover, handleDrop, last }) => (
-  <DragDropArea
-    $hover={ dragHover && (!!last || currentDragging !== songID) }
-    onDragOver={ event => { setDragHover(true); (!!last || currentDragging !== songID) && event.preventDefault() } }
-    onDragLeave={ () => setDragHover(false) }
-    onDrop={ handleDrop }>
-    <h3>
+const SongDragDropArea: FC<SongDragDropAreaProps> = ({ songID, currentDragging, dragHover, setDragHover, handleDrop, last }) => {
+  const handleDragOver = useCallback((e: React.DragEvent<HTMLDivElement>) => {
+    setDragHover(true);
+    if (!!last || currentDragging !== songID)
+      e.preventDefault();
+  }, []);
+  
+  return (
+    <DragDropArea
+      $hover={ dragHover && (!!last || currentDragging !== songID) }
+      onDragOver={ event => handleDragOver(event) }
+      onDragLeave={ () => setDragHover(false) }
+      onDrop={ handleDrop }>
+      <h3>
       Drag a song here to reorder
-    </h3>
-  </DragDropArea>
-);
+      </h3>
+    </DragDropArea>
+  );
+};
 
 interface DragDropAreaProps {
   $hover: boolean;

@@ -16,13 +16,13 @@ const AllCastColumn: FC<AllCastColumnProps> = ({ instrument, students }) => {
       <Tile $orange>
         <h3>{ instrument }</h3>
       </Tile>
-      { students.map(x => <Tile key={ x } $student $orange={ x === highlightedStudent } onClick={ () => setHighlightedStudent(x === highlightedStudent ? null : x) }>
+      { students.toSorted().map(x => <Tile key={ x } $student $orange={ x === highlightedStudent } onClick={ () => setHighlightedStudent(x === highlightedStudent ? null : x) }>
         <h3>{ x }</h3>
       </Tile>)
       }
     </Column>
-  )
-}
+  );
+};
 
 const Column = styled.div`
   display: flex;
@@ -51,6 +51,6 @@ const Tile = styled.div<TileProps>`
     margin: 0;
     text-align: center;
   }
-`
+`;
 
 export default AllCastColumn;

@@ -19,7 +19,10 @@ const LowerToolbar: FC<LowerToolbarProps> = ({ addingSong, setAddingSong }) => {
   const [artistInput, setArtistInput] = useState('');
   
   const handleAddSongClick = useCallback(() => {
-    currentEditingShow?.singleArtist ? addSong(nameInput) : addSong(nameInput, artistInput);
+    if (currentEditingShow?.singleArtist)
+      addSong(nameInput);
+    else
+      addSong(nameInput, artistInput);
     setAddingSong(false);
     setNameInput('');
     setArtistInput('');
@@ -34,7 +37,7 @@ const LowerToolbar: FC<LowerToolbarProps> = ({ addingSong, setAddingSong }) => {
       if (!oldState)
         return null;
       return { ...oldState, [prefName]: !oldState[prefName] };
-    })
+    });
   }, [setPrefs]);
 
   const handleSetSplitClick = useCallback((newSplitIndex: number) => {
@@ -56,14 +59,14 @@ const LowerToolbar: FC<LowerToolbarProps> = ({ addingSong, setAddingSong }) => {
           <span className='material-symbols-outlined'>add</span>
         </SmallButton>
       </ToolbarMain>
-    )
+    );
 
   if (currentEditingShow && prefs)
     return (
       <ToolbarMain>
         <Button $disabled={ addingSong && (!nameInput || nameIsDupe) } onClick={ () => addingSong ? handleAddSongClick() : setAddingSong(true) }>
           { nameIsDupe ? <h3>Song already exists</h3>
-          : <h3>{ addingSong ? 'Save and Add Song' : 'Add Song' }</h3>
+            : <h3>{ addingSong ? 'Save and Add Song' : 'Add Song' }</h3>
           }
         </Button>
         { !addingSong
@@ -93,8 +96,8 @@ const LowerToolbar: FC<LowerToolbarProps> = ({ addingSong, setAddingSong }) => {
           </SmallButton>
         </> }
       </ToolbarMain>
-    )
-}
+    );
+};
 
 const ToolbarMain = styled.div`
   display: flex;
@@ -156,7 +159,7 @@ const SetDividerText = styled.div`
     color: white;
     margin: 0;
   }
-`
+`;
 
 const NameInput = styled.input`
   color: white;

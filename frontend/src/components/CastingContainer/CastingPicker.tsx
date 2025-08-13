@@ -11,22 +11,22 @@ const CastingPicker: FC = () => {
   const songName = useMemo(() => showSongs?.find(x => x.id === currentCastEdit?.songID)?.name, [showSongs, currentCastEdit]);
 
   if (showSongs && showCast && currentCastEdit)
-  return (
-    <PickerMain>
-      <h2>{ getFullInstName(currentCastEdit?.inst) }</h2>
-      <h2>{ songName }</h2>
-      <div>
-        <Button onClick={ clearAndCloseCasting }>
-          <h3>Clear Casting</h3>
-        </Button>
-        <Button onClick={ discardCastEdit }>
-          <h3>Discard Change</h3>
-        </Button>
-      </div>
-      <div>{ ALL_INSTRUMENTS.map(x => <PickerColumn key={ x } instrument={ x } castMembers={ showCast.filter(student => student.main === x) } />) }</div>
-    </PickerMain>
-  )
-}
+    return (
+      <PickerMain>
+        <h2>{ getFullInstName(currentCastEdit?.inst) }</h2>
+        <h2>{ songName }</h2>
+        <div>
+          <Button onClick={ clearAndCloseCasting }>
+            <h3>Clear Casting</h3>
+          </Button>
+          <Button onClick={ discardCastEdit }>
+            <h3>Discard Change</h3>
+          </Button>
+        </div>
+        <div>{ ALL_INSTRUMENTS.map(x => <PickerColumn key={ x } instrument={ x } castMembers={ showCast.filter(student => student.main === x) } />) }</div>
+      </PickerMain>
+    );
+};
 
 const PickerMain = styled.div`
   display: flex;

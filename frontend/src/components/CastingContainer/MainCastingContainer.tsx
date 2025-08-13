@@ -19,7 +19,7 @@ const MainCastingContainer: FC = () => {
   const handleEndDrop = useCallback(() => {
     if (!currentDragging|| !showSongs)
       return;
-    reorderSong(currentDragging, showSongs.length)
+    reorderSong(currentDragging, showSongs.length);
     setEndDragHover(false);
     setCurrentDragging(null);
   }, [currentDragging, reorderSong]);
@@ -27,17 +27,17 @@ const MainCastingContainer: FC = () => {
   const insertSetDivider = useCallback((elements: JSX.Element[]) => {
     if (!currentEditingShow)
       return;
-    const setList = [...elements]
+    const setList = [...elements];
     if (currentEditingShow.setSplitIndex > 0 || toolsMode)
-      setList.splice(currentEditingShow?.setSplitIndex, 0, <SetListDivider key='divider'>{ toolsMode && <h3>Set 2</h3> }</SetListDivider>)
+      setList.splice(currentEditingShow?.setSplitIndex, 0, <SetListDivider key='divider'>{ toolsMode && <h3>Set 2</h3> }</SetListDivider>);
     return setList;
   }, [currentEditingShow, toolsMode]);
 
   if (currentEditingShow && showSongs)
-  return (
-    <ContainerMain $fade={ !!currentCastEdit } >
-      <CastListHeader showName={ currentEditingShow.name } disabled={ addingSong } />
-      { insertSetDivider(showSongs.toSorted((a, b) => a.setOrder - b.setOrder).map(song => 
+    return (
+      <ContainerMain $fade={ !!currentCastEdit } >
+        <CastListHeader showName={ currentEditingShow.name } disabled={ addingSong } />
+        { insertSetDivider(showSongs.toSorted((a, b) => a.setOrder - b.setOrder).map(song => 
           <SongCastingRow
             key={ song.id }
             song={ song }
@@ -46,18 +46,18 @@ const MainCastingContainer: FC = () => {
             setActiveSongEdit={ setActiveSongEdit } setCurrentDragging={ setCurrentDragging }
           />
         ))
-      }
-      { toolsMode && <SongDragDropArea
-        songID={ '$$last$$' }
-        currentDragging={ currentDragging }
-        dragHover={ endDragHover }
-        setDragHover={ setEndDragHover }
-        handleDrop={ handleEndDrop }
-      /> }
-      <LowerToolbar addingSong={ addingSong } setAddingSong={ setAddingSong } />
-    </ContainerMain>
-  )
-}
+        }
+        { toolsMode && <SongDragDropArea
+          songID={ '$$last$$' }
+          currentDragging={ currentDragging }
+          dragHover={ endDragHover }
+          setDragHover={ setEndDragHover }
+          handleDrop={ handleEndDrop }
+        /> }
+        <LowerToolbar addingSong={ addingSong } setAddingSong={ setAddingSong } />
+      </ContainerMain>
+    );
+};
 
 interface ContainerProps {
   $fade: boolean;

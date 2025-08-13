@@ -16,9 +16,9 @@ const CastByInstrumentColumn: FC<CastByInstrumentColumnProps> = ({ instrument, c
     <InstrumentHeader>
       <h3>{ instrument }</h3>
     </InstrumentHeader>
-    { castMembers.map(x => <CastMember key={ x.name } student={ x } twoPmStart={ twoPmStart } activeEdit={ activeEdit } setActiveEdit={ setActiveEdit } />) }
+    { castMembers.toSorted((a, b) => a.name < b.name ? -1 : 1).map(x => <CastMember key={ x.name } student={ x } twoPmStart={ twoPmStart } activeEdit={ activeEdit } setActiveEdit={ setActiveEdit } />) }
   </Column>
-)
+);
 
 const Column = styled.div`
   display: flex;

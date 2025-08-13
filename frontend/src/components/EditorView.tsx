@@ -31,6 +31,6 @@ const EditorView: FC = () => {
 
   if (editorView === 'editCast')
     return <CastMemberView />;
-}
+};
 
 export default EditorView;

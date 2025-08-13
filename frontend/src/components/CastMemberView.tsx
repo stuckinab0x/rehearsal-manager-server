@@ -27,48 +27,48 @@ const CastMemberView: FC = () => {
   const inputIsDupe = useMemo(() => {
     if (!showCast)
       return false;
-    return showCast.some(x => x.name.toLowerCase() === nameInput.toLowerCase())
+    return showCast.some(x => x.name.toLowerCase() === nameInput.toLowerCase());
   }, [showCast, nameInput]);
 
   if (currentEditingShow && showCast)
-  return (
-    <ViewMain>
-      <h2>{ currentEditingShow.name }:  Manage Cast Members</h2>
-      { addingCastMember ? 
-      <>
-        <NameInput value={ nameInput } onChange={ event => setNameInput(event.currentTarget.value) } placeholder='enter a student name' />
-        <Selector>
-          <div>
-            { ALL_INSTRUMENTS.map(x => <SelectorButton key={ x } select={ () => setNewStudentMain(x) } value={ x } active={ newStudentMain === x } />) }
-          </div>
-        </Selector>
-        <Button onClick={ () => { setAddingCastMember(false); setNameInput('') } }>
-          <h2>Discard</h2>
-        </Button>
-        { nameInput && <AddButton onClick={ handleNewStudentClick } $disabled={ inputIsDupe }>
-          <h2>
-            { inputIsDupe ? 'Duplicate student name detected' : 'Add' }
-          </h2>
-        </AddButton> }
-      </>
-      : 
-      <>
-        <Row>
-          <AddButton onClick={ () => setAddingCastMember(true) } $disabled={ !!activeEdit }>
-              <h2>New Cast Member</h2>
-            </AddButton>
-          <Button onClick={ () => setEditorView('showOverview') }>
-            <h2>Return to Show Overview</h2>
-          </Button>
-        </Row>
-        <div>
-          { ALL_INSTRUMENTS.map(x => <CastByInstrumentColumn key={ x } activeEdit={ activeEdit } setActiveEdit={ setActiveEdit } twoPmStart={ currentEditingShow.twoPMRehearsal } instrument={ x } castMembers={ showCast.filter(student => student.main === x) } />) }
-        </div>
-      </>
-      }
-    </ViewMain>
-  )
-}
+    return (
+      <ViewMain>
+        <h2>{ currentEditingShow.name }:  Manage Cast Members</h2>
+        { addingCastMember ? 
+          <>
+            <NameInput value={ nameInput } onChange={ event => setNameInput(event.currentTarget.value) } placeholder='enter a student name' />
+            <Selector>
+              <div>
+                { ALL_INSTRUMENTS.map(x => <SelectorButton key={ x } select={ () => setNewStudentMain(x) } value={ x } active={ newStudentMain === x } />) }
+              </div>
+            </Selector>
+            <Button onClick={ () => { setAddingCastMember(false); setNameInput(''); } }>
+              <h2>Discard</h2>
+            </Button>
+            { nameInput && <AddButton onClick={ handleNewStudentClick } $disabled={ inputIsDupe }>
+              <h2>
+                { inputIsDupe ? 'Duplicate student name detected' : 'Add' }
+              </h2>
+            </AddButton> }
+          </>
+          : 
+          <>
+            <Row>
+              <AddButton onClick={ () => setAddingCastMember(true) } $disabled={ !!activeEdit }>
+                <h2>New Cast Member</h2>
+              </AddButton>
+              <Button onClick={ () => setEditorView('showOverview') }>
+                <h2>Return to Show Overview</h2>
+              </Button>
+            </Row>
+            <div>
+              { ALL_INSTRUMENTS.map(x => <CastByInstrumentColumn key={ x } activeEdit={ activeEdit } setActiveEdit={ setActiveEdit } twoPmStart={ currentEditingShow.twoPMRehearsal } instrument={ x } castMembers={ showCast.filter(student => student.main === x) } />) }
+            </div>
+          </>
+        }
+      </ViewMain>
+    );
+};
 
 const h2 = css`
   color: white;
@@ -107,7 +107,7 @@ const Button = styled.div`
   > h2 {
     ${ h2 }
   }
-`
+`;
 
 interface AddButtonProps {
   $disabled: boolean;

@@ -1,22 +1,4 @@
-import { Student } from '../models/student';
-
-interface ParsedStudent {
-  id: number;
-  name: string;
-  main: string;
-  castings: any[];
-  lesson: string;
-}
-
-const runStudentUpdates = async (students: ParsedStudent[], showID: string, db: D1Database): Promise<void> => {
-  const stmts = students.map<D1PreparedStatement>(x => db.prepare(
-    `
-      INSERT OR REPLACE INTO students (id, name, main, castings, lesson, show_id)
-      VALUES (?, ?, ?, ?, ?, ?);
-    `
-  ).bind(x.id, x.name, x.main, JSON.stringify(x.castings), x.lesson || null, showID));
-  await db.batch(stmts);
-}
+import { ParsedShowStudent, ParsedStudent, Student } from '../models/student';
 
 export default async function handleStudentsRequest(req: Request<unknown, IncomingRequestCfProperties<unknown>>, db: D1Database): Promise<Response> {
   const url = new URL(req.url);
@@ -32,6 +14,29 @@ export default async function handleStudentsRequest(req: Request<unknown, Incomi
     ).bind(showID).run<Student>();
     return Response.json(studentsResult.results.map(x => ({ ...x, castings: JSON.parse(x.castings) })));
   }
+
+  if (routePath === '' && req.method === 'PUT' && showID) {
+    const body = await req.json<ParsedStudent[]>();
+    const stmts = body.map<D1PreparedStatement>(x => db.prepare(
+      `
+        INSERT OR REPLACE INTO students (id, name, main, castings, lesson, show_id)
+        VALUES (?, ?, ?, ?, ?, ?);
+      `
+    ).bind(x.id, x.name, x.main, JSON.stringify(x.castings), x.lesson || null, showID));
+    await db.batch(stmts);
+  
+    return new Response;
+  }
+
+  if (routePath === '' && req.method === 'DELETE' && studentID) {
+    await db.prepare(
+      'DELETE FROM students WHERE id = ?'
+    ).bind(studentID).run();
+
+    return new Response;
+  }
+
+  // app
 
   if (routePath === '/full' && req.method === 'GET' && profileID) {
     const showIDsResult = await db.prepare(
@@ -52,18 +57,17 @@ export default async function handleStudentsRequest(req: Request<unknown, Incomi
     return Response.json(allStudents);
   }
 
-  if (routePath === '' && req.method === 'PUT' && showID) {
-    const body = await req.json<ParsedStudent[]>();
-    await runStudentUpdates(body, showID, db);
+  if (routePath === '/full' && req.method === 'PUT') {
+    const body = await req.json<ParsedShowStudent[]>();
+
+    const stmts = body.map<D1PreparedStatement>(x => db.prepare(
+      `
+        INSERT OR REPLACE INTO students (id, name, main, castings, lesson, show_id)
+        VALUES (?, ?, ?, ?, ?, ?);
+      `
+    ).bind(x.id, x.name, x.main, JSON.stringify(x.castings), x.lesson, x.showID));
+    await db.batch(stmts);
   
-    return new Response;
-  }
-
-  if (routePath === '' && req.method === 'DELETE' && studentID) {
-    await db.prepare(
-      'DELETE FROM students WHERE id = ?'
-    ).bind(studentID).run();
-
     return new Response;
   }
 
