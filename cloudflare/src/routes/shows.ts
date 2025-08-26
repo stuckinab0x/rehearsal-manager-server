@@ -10,7 +10,7 @@ export default async function handleShowsRequest(req: Request<unknown, IncomingR
 
   if (routePath === '' && req.method === 'GET' && profileID) {
     const showsResult = await db.prepare(
-      "SELECT id, name FROM shows WHERE profile_id = ?"
+      "SELECT id, name FROM shows WHERE profile_id = ?",
     ).bind(profileID).run<{ id: number, name: string; }>();
 
     return Response.json(showsResult.results);
@@ -18,7 +18,7 @@ export default async function handleShowsRequest(req: Request<unknown, IncomingR
 
   if (routePath === '' && req.method === 'GET' && showID) {
     const showsResult = await db.prepare(
-      "SELECT id, name, single_artist, two_pm_rehearsal, set_split_index FROM shows WHERE id = ?;"
+      "SELECT id, name, single_artist, two_pm_rehearsal, set_split_index FROM shows WHERE id = ?;",
     ).bind(showID).run<ShowProps>();
     const show = showsResult.results[0];
     const parsedShow: ParsedShowProps = { id: show.id, name: show.name, singleArtist: show.single_artist === 1, twoPMRehearsal: show.two_pm_rehearsal === 1, setSplitIndex: show.set_split_index };
@@ -33,7 +33,7 @@ export default async function handleShowsRequest(req: Request<unknown, IncomingR
       `
         INSERT INTO shows (id, name, single_artist, two_pm_rehearsal, set_split_index, profile_id)
         VALUES (?, ?, ?, ?, ?, ?);
-      `
+      `,
     ).bind(show.id, show.name, show.singleArtist, show.twoPMRehearsal, show.setSplitIndex, profileID).run();
 
     return new Response;
@@ -47,7 +47,7 @@ export default async function handleShowsRequest(req: Request<unknown, IncomingR
         UPDATE shows
         SET name = ?2, single_artist = ?3, two_pm_rehearsal = ?4, set_split_index = ?5, profile_id = ?6
         WHERE id = ?1;
-      `
+      `,
     ).bind(show.id, show.name, show.singleArtist, show.twoPMRehearsal, show.setSplitIndex, profileID).run();
 
     return new Response;
@@ -60,24 +60,34 @@ export default async function handleShowsRequest(req: Request<unknown, IncomingR
       `
         SELECT id, name, single_artist, two_pm_rehearsal, set_split_index
         FROM shows WHERE profile_id = ?;
-      `
+      `,
     ).bind(profileID).run<ShowProps>();
-    const shows = showsResult.results.map<ParsedShowProps>(x => ({ id: x.id, name: x.name, singleArtist: x.single_artist === 1, twoPMRehearsal: x.two_pm_rehearsal === 1, setSplitIndex: x.set_split_index  }));
+    const shows = showsResult.results.map<ParsedShowProps>(x => ({
+      id: x.id,
+      name: x.name,
+      singleArtist: x.single_artist === 1,
+      twoPMRehearsal: x.two_pm_rehearsal === 1,
+      setSplitIndex: x.set_split_index,
+    }));
     return Response.json(shows);
   }
 
   if (routePath === '/full' && req.method === 'PUT' && profileID) {
     const showsProps = await req.json<ParsedShowProps[]>();
 
-    const stmts = showsProps.map(x => db.prepare(
-      `
+    if (showsProps.length) {
+      const stmts = showsProps.map(x => db.prepare(
+        `
         INSERT OR REPLACE INTO shows (id, name, single_artist, two_pm_rehearsal, set_split_index, profile_id)
         VALUES (?, ?, ?, ?, ?, ?);
-      `
-    ).bind(x.id, x.name, x.singleArtist, x.twoPMRehearsal, x.setSplitIndex, profileID));
-        
-    await db.batch(stmts);
+      `,
+      ).bind(x.id, x.name, x.singleArtist, x.twoPMRehearsal, x.setSplitIndex, profileID));
 
+      await db.batch(stmts);
+    } else {
+      await db.prepare('DELETE FROM shows').run();
+    }
+    
     return new Response;
   }
   

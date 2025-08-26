@@ -64,7 +64,15 @@ const NewSongsView: FC = () => {
         <SongInputsContainer>
           <InputsColumn>
             <h2>Song Name</h2>
-            { songInputs.map((x, i) => <Input type='text' $songInput={ !currentEditingShow.singleArtist } key={ x.id } value={ x.value } onChange={ event => handleInputChange(i, event.currentTarget, setSongInputs) } />) }
+            { songInputs.map((x, i) =>
+              <Input
+                type='text'
+                $songInput={ !currentEditingShow.singleArtist }
+                key={ x.id }
+                value={ x.value }
+                onChange={ event => handleInputChange(i, event.currentTarget, setSongInputs) }
+              />,
+            ) }
           </InputsColumn>
           { !currentEditingShow.singleArtist
           && <InputsColumn>
@@ -148,7 +156,7 @@ interface DoneButtonProps {
 
 const DoneButton = styled(AddButton)<DoneButtonProps>`
   margin-top: 20px;
-  ${ props => props.$disabled && 'pointer-events: none; opacity: 0.5;'}
+  ${ props => props.$disabled && 'pointer-events: none; opacity: 0.5;' }
   
   > h3 {
     font-size: 30px;

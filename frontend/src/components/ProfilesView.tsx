@@ -22,7 +22,7 @@ const ProfilesView: FC = () => {
         { profiles.length > 0 && profiles.map(x => 
           <Button key={ x.id } onClick={ () => setProfileAndReload(x) }>
             <h2>{ x.name }</h2>
-          </Button>
+          </Button>,
         )}
         <Divider />
         <Button onClick={ () => setCreatingNew(true) }>

@@ -214,7 +214,13 @@ const EditorProvider: FC<EditorProviderProps> = ({ children }) => {
 
     const newOrderedSongs: Song[] = newSongs.toSpliced(newSetOrder, 0, moved).map((x, i) => ({ ...x, setOrder: i }));
 
-    await mutateSongs(async () => { await updateResourceRequest(newOrderedSongs, currentEditingShow?.id, 'songs'); return newOrderedSongs; }, { optimisticData: newOrderedSongs, rollbackOnError: true });
+    await mutateSongs(
+      async () => { 
+        await updateResourceRequest(newOrderedSongs, currentEditingShow?.id, 'songs');
+        return newOrderedSongs;
+      },
+      { optimisticData: newOrderedSongs, rollbackOnError: true },
+    );
   }, [currentEditingShow?.id, showSongs]);
 
   const deleteSong = useCallback(async (songID: string) => {
@@ -229,9 +235,15 @@ const EditorProvider: FC<EditorProviderProps> = ({ children }) => {
 
     await mutateSongs(async () => { await deleteSongRequest(); return newSongs; }, { optimisticData: newSongs, rollbackOnError: true });
 
-    if (newSongs.length) {
-      await mutateSongs(async () => { await updateResourceRequest(newSongs, currentEditingShow.id, 'songs'); return newSongs; }, { optimisticData: newSongs, rollbackOnError: true });
-    }
+    if (newSongs.length) 
+      await mutateSongs(
+        async () => {
+          await updateResourceRequest(newSongs, currentEditingShow.id, 'songs');
+          return newSongs;
+        },
+        { optimisticData: newSongs, rollbackOnError: true },
+      );
+    
   }, [currentEditingShow?.id, showSongs]);
 
   const saveSetListSplitIndex = useCallback(async (setSplitIndex: number) => {

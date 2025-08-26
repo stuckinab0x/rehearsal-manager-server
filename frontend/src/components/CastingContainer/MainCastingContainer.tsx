@@ -44,16 +44,18 @@ const MainCastingContainer: FC = () => {
             disabled={ addingSong || (!!activeSongEdit && activeSongEdit !== song.id) }
             currentDragging={ currentDragging }
             setActiveSongEdit={ setActiveSongEdit } setCurrentDragging={ setCurrentDragging }
-          />
+          />,
         ))
         }
-        { toolsMode && <SongDragDropArea
-          songID={ '$$last$$' }
-          currentDragging={ currentDragging }
-          dragHover={ endDragHover }
-          setDragHover={ setEndDragHover }
-          handleDrop={ handleEndDrop }
-        /> }
+        { toolsMode &&
+          <SongDragDropArea
+            songID={ '$$last$$' }
+            currentDragging={ currentDragging }
+            dragHover={ endDragHover }
+            setDragHover={ setEndDragHover }
+            handleDrop={ handleEndDrop }
+          />
+        }
         <LowerToolbar addingSong={ addingSong } setAddingSong={ setAddingSong } />
       </ContainerMain>
     );

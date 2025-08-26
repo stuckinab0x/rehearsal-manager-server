@@ -6,23 +6,26 @@ import handleStudentsRequest from "./routes/students";
 
 export default {
   async fetch(request, env): Promise<Response> {
-    const url = new URL(request.url);
+    try {
+      const url = new URL(request.url);
 
-    if (url.pathname.startsWith('/api/profiles'))
-      return handleProfilesRequest(request, env.DB);
+      if (url.pathname.startsWith('/api/profiles'))
+        return handleProfilesRequest(request, env.DB);
 
-    if (url.pathname.startsWith('/api/shows'))
-      return handleShowsRequest(request, env.DB);
+      if (url.pathname.startsWith('/api/shows'))
+        return handleShowsRequest(request, env.DB);
 
-    if (url.pathname.startsWith('/api/songs'))
-      return handleSongsRequest(request, env.DB);
+      if (url.pathname.startsWith('/api/songs'))
+        return handleSongsRequest(request, env.DB);
 
-    if (url.pathname.startsWith('/api/students'))
-      return handleStudentsRequest(request, env.DB);
+      if (url.pathname.startsWith('/api/students'))
+        return handleStudentsRequest(request, env.DB);
 
-    if (url.pathname.startsWith('/api/rehearsals'))
-      return handleRehearsalsRequest(request, env.DB);
-
+      if (url.pathname.startsWith('/api/rehearsals'))
+        return handleRehearsalsRequest(request, env.DB);
+    } catch (error) {
+      console.log(error);
+    }
     return new Response;
   },
 } satisfies ExportedHandler<Env>;

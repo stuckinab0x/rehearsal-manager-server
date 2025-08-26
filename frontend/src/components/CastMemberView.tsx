@@ -62,7 +62,15 @@ const CastMemberView: FC = () => {
               </Button>
             </Row>
             <div>
-              { ALL_INSTRUMENTS.map(x => <CastByInstrumentColumn key={ x } activeEdit={ activeEdit } setActiveEdit={ setActiveEdit } twoPmStart={ currentEditingShow.twoPMRehearsal } instrument={ x } castMembers={ showCast.filter(student => student.main === x) } />) }
+              { ALL_INSTRUMENTS.map(x =>
+                <CastByInstrumentColumn
+                  key={ x }
+                  activeEdit={ activeEdit }
+                  setActiveEdit={ setActiveEdit }
+                  twoPmStart={ currentEditingShow.twoPMRehearsal }
+                  instrument={ x } castMembers={ showCast.filter(student => student.main === x) }
+                />)
+              }
             </div>
           </>
         }

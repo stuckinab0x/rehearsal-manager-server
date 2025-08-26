@@ -17,7 +17,14 @@ const LessonSelector: FC<LessonSelectorProps> = ({ student, twoPmStart }) => {
   return (
     <SelectorMain>
       <SelectorButton select={ () => updateStudentInfo(student.id, { name: student.name, lesson: undefined, main: student.main  }) } value={ 'No Lesson' } active={ !student.lesson } />
-      { lessonsTimes.map(x => <SelectorButton key={ x } select={ () => updateStudentInfo(student.id, { name: student.name, lesson: x, main: student.main  }) } value={ x } active={ student.lesson === x } />) }
+      { lessonsTimes.map(x =>
+        <SelectorButton
+          key={ x }
+          select={ () => updateStudentInfo(student.id, { name: student.name, lesson: x, main: student.main  }) }
+          value={ x }
+          active={ student.lesson === x }
+        />,
+      ) }
     </SelectorMain>
   );
 };

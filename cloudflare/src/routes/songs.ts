@@ -10,7 +10,7 @@ export default async function handleSongsRequest(req: Request<unknown, IncomingR
 
   if (routePath === '' && req.method === 'GET' && showID) {
     const songsResult = await db.prepare(
-      "SELECT id, name, artist, set_order, color FROM songs WHERE show_id = ?"
+      "SELECT id, name, artist, set_order, color FROM songs WHERE show_id = ?",
     ).bind(showID).run<Song>();
     const songs: ParsedSong[] = songsResult.results.map(x => ({ id: x.id, name: x.name, artist: x.artist, setOrder: x.set_order, color: x.color }));
     return Response.json(songs);
@@ -23,7 +23,7 @@ export default async function handleSongsRequest(req: Request<unknown, IncomingR
       `
         INSERT OR REPLACE INTO songs (id, name, artist, set_order, color, show_id)
         VALUES (?, ?, ?, ?, ?, ?);
-      `
+      `,
     ).bind(x.id, x.name, x.artist || null, x.setOrder, x.color, showID));
     await db.batch(stmts);
 
@@ -32,7 +32,7 @@ export default async function handleSongsRequest(req: Request<unknown, IncomingR
 
   if (routePath === '' && req.method === 'DELETE' && songID) {
     await db.prepare(
-      'DELETE FROM songs WHERE id = ?'
+      'DELETE FROM songs WHERE id = ?',
     ).bind(songID).run();
 
     return new Response;
@@ -42,18 +42,24 @@ export default async function handleSongsRequest(req: Request<unknown, IncomingR
 
   if (routePath === '/full' && req.method === 'GET' && profileID) {
     const showIDsResult = await db.prepare(
-      "SELECT id FROM shows WHERE profile_id = ?"
+      "SELECT id FROM shows WHERE profile_id = ?",
     ).bind(profileID).run<{ id: string }>();
 
-    const stmts = showIDsResult.results.map(x => db.prepare(
-      `
+    let allSongs: Song[] = [];
+
+    if (showIDsResult.results.length) {
+      const stmts = showIDsResult.results.map(x => db.prepare(
+        `
           SELECT id, name, artist, set_order, color, show_id FROM songs
           WHERE show_id = ?
-        `
-    ).bind(x.id)
-    );
-    const songsResult = await db.batch<Song>(stmts);
-    const allSongs: Song[] = songsResult.flatMap(x => x.results);
+        `,
+      ).bind(x.id),
+      );
+
+      const songsResult = await db.batch<Song>(stmts);
+      allSongs = songsResult.flatMap(x => x.results);
+    }
+
     return Response.json(allSongs);
   }
 
@@ -64,7 +70,7 @@ export default async function handleSongsRequest(req: Request<unknown, IncomingR
       `
         INSERT OR REPLACE INTO songs (id, name, artist, set_order, color, show_id)
         VALUES (?, ?, ?, ?, ?, ?)
-      `
+      `,
     ).bind(x.id, x.name, x.artist || null, x.setOrder, x.color, x.showID));
     await db.batch(stmts);
 

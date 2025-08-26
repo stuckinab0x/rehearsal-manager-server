@@ -118,7 +118,7 @@ const ProfileProvider: FC<ProfileProviderProps> = ({ children }) => {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ id: crypto.randomUUID(), name }),
-      }
+      },
     );
     location.reload();
   }, []);

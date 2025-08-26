@@ -9,9 +9,11 @@ export default async function handleRehearsalsRequest(req: Request<unknown, Inco
 
   if (routePath === '' && req.method === 'GET' && showID) {
     const rehearsalsResult = await db.prepare(
-      "SELECT id, date, absent, were_run, todolist FROM rehearsals WHERE show_id = ?"
+      "SELECT id, date, absent, were_run, todolist FROM rehearsals WHERE show_id = ?",
     ).bind(showID).run<Rehearsal>();
-    const rehearsals = rehearsalsResult.results.map<ParsedRehearsal>(x => ({ id: x.id, date: x.date, absent: JSON.parse(x.absent), wereRun: JSON.parse(x.were_run), todoList: JSON.parse(x.todo_list) }));
+    const rehearsals = rehearsalsResult.results.map<ParsedRehearsal>(x => ({
+      id: x.id, date: x.date, absent: JSON.parse(x.absent), wereRun: JSON.parse(x.were_run), todoList: JSON.parse(x.todo_list),
+    }));
     return Response.json(rehearsals);
   }
 
@@ -19,19 +21,23 @@ export default async function handleRehearsalsRequest(req: Request<unknown, Inco
 
   if (routePath === '/full' && req.method === 'GET' && profileID) {
     const showIDsResult = await db.prepare(
-      "SELECT id FROM shows WHERE profile_id = ?"
+      "SELECT id FROM shows WHERE profile_id = ?",
     ).bind(profileID).run<{ id: string }>();
 
-    const stmts = showIDsResult.results.map(x => db.prepare(
-      `
+    let allRehearsals: Rehearsal[] = [];
+
+    if (showIDsResult.results.length) {
+      const stmts = showIDsResult.results.map(x => db.prepare(
+        `
         SELECT id, date, absent, were_run, todo_list, show_id FROM rehearsals
         WHERE show_id = ?
-      `
-    ).bind(x.id)
-    );
+      `,
+      ).bind(x.id),
+      );
 
-    const rehearsalsResult = await db.batch<Rehearsal>(stmts);
-    const allRehearsals = rehearsalsResult.flatMap(x => x.results);
+      const rehearsalsResult = await db.batch<Rehearsal>(stmts);
+      allRehearsals = rehearsalsResult.flatMap(x => x.results);
+    }
 
     return Response.json(allRehearsals);
   }
@@ -43,7 +49,7 @@ export default async function handleRehearsalsRequest(req: Request<unknown, Inco
       `
         INSERT OR REPLACE INTO rehearsals (id, date, absent, were_run, todo_list, show_id)
         VALUES (?, ?, ?, ?, ?, ?);
-      `
+      `,
     ).bind(x.id, x.date, JSON.stringify(x.absent), JSON.stringify(x.wereRun), JSON.stringify(x.todoList), x.showID));
     await db.batch(stmts);
   

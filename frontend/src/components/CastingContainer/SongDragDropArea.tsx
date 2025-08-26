@@ -22,7 +22,8 @@ const SongDragDropArea: FC<SongDragDropAreaProps> = ({ songID, currentDragging, 
       $hover={ dragHover && (!!last || currentDragging !== songID) }
       onDragOver={ event => handleDragOver(event) }
       onDragLeave={ () => setDragHover(false) }
-      onDrop={ handleDrop }>
+      onDrop={ handleDrop }
+    >
       <h3>
       Drag a song here to reorder
       </h3>

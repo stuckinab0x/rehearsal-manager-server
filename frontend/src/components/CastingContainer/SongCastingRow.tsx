@@ -84,13 +84,15 @@ const SongCastingRow: FC<SongCastingRowProps> = ({ song, disabled, setActiveSong
   if (hidden && currentEditingShow)
     return (
       <RowMain $disabled={ disabled }>
-        { toolsMode && <SongDragDropArea 
-          songID={ song.id }
-          currentDragging={ currentDragging }
-          dragHover={ dragHover }
-          setDragHover={ setDragHover }
-          handleDrop={ handleDrop }
-        /> }
+        { toolsMode &&
+          <SongDragDropArea 
+            songID={ song.id }
+            currentDragging={ currentDragging }
+            dragHover={ dragHover }
+            setDragHover={ setDragHover }
+            handleDrop={ handleDrop }
+          />
+        }
         <div>
           <SongDisplay
             $tileColor={ song.color }
@@ -99,7 +101,8 @@ const SongCastingRow: FC<SongCastingRowProps> = ({ song, disabled, setActiveSong
             draggable={ toolsMode && !editingName && !deleting }
             onDrag={ handleDragStart }
             onDragEnd={ () => setCurrentDragging(null) }
-            $toolsMode={ toolsMode && !editingName && !deleting }>
+            $toolsMode={ toolsMode && !editingName && !deleting }
+          >
             { toolsMode && !editingName && !deleting
             && <div>
               <span className='material-symbols-outlined' onClick={ () => { setEditingName(true); setActiveSongEdit(song.id); } } >edit</span>
@@ -120,8 +123,15 @@ const SongCastingRow: FC<SongCastingRowProps> = ({ song, disabled, setActiveSong
               { !currentEditingShow?.singleArtist && <NameInput type='text' autoFocus value={ artistInput } onChange={ event => setArtistInput(event.currentTarget.value) }  /> }
             </div>
           }
-          { toolsMode && (editingName || deleting) && <ActionButton onClick={ () => { setEditingName(false); setDeleting(false); setActiveSongEdit(null); } }><h3>{ deleting ? 'Cancel' : 'Discard Changes' }</h3></ActionButton> }
-          { !editingName && !deleting && ALL_CAST_INST.filter(x => !hidden.includes(x)).map(inst => <CastingButton key={ inst } disabled={ toolsMode } assignedStudent={ getCasting(song.id, inst) } startCasting={ () => setCastEdit(song.id, inst) } />) }
+          { toolsMode && (editingName || deleting) &&
+            <ActionButton
+              onClick={ () => { setEditingName(false); setDeleting(false); setActiveSongEdit(null); } }
+            >
+              <h3>{ deleting ? 'Cancel' : 'Discard Changes' }</h3>
+            </ActionButton>
+          }
+          { !editingName && !deleting && ALL_CAST_INST.filter(x => !hidden.includes(x)).map(inst =>
+            <CastingButton key={ inst } disabled={ toolsMode } assignedStudent={ getCasting(song.id, inst) } startCasting={ () => setCastEdit(song.id, inst) } />) }
         </div>
       </RowMain>
     );

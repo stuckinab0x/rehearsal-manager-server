@@ -10,7 +10,7 @@ export default async function handleStudentsRequest(req: Request<unknown, Incomi
 
   if (routePath === '' && req.method === 'GET' && showID) {
     const studentsResult = await db.prepare(
-      "SELECT id, name, main, castings, lesson FROM students WHERE show_id = ?"
+      "SELECT id, name, main, castings, lesson FROM students WHERE show_id = ?",
     ).bind(showID).run<Student>();
     return Response.json(studentsResult.results.map(x => ({ ...x, castings: JSON.parse(x.castings) })));
   }
@@ -21,7 +21,7 @@ export default async function handleStudentsRequest(req: Request<unknown, Incomi
       `
         INSERT OR REPLACE INTO students (id, name, main, castings, lesson, show_id)
         VALUES (?, ?, ?, ?, ?, ?);
-      `
+      `,
     ).bind(x.id, x.name, x.main, JSON.stringify(x.castings), x.lesson || null, showID));
     await db.batch(stmts);
   
@@ -30,7 +30,7 @@ export default async function handleStudentsRequest(req: Request<unknown, Incomi
 
   if (routePath === '' && req.method === 'DELETE' && studentID) {
     await db.prepare(
-      'DELETE FROM students WHERE id = ?'
+      'DELETE FROM students WHERE id = ?',
     ).bind(studentID).run();
 
     return new Response;
@@ -40,19 +40,22 @@ export default async function handleStudentsRequest(req: Request<unknown, Incomi
 
   if (routePath === '/full' && req.method === 'GET' && profileID) {
     const showIDsResult = await db.prepare(
-      "SELECT id FROM shows WHERE profile_id = ?"
+      "SELECT id FROM shows WHERE profile_id = ?",
     ).bind(profileID).run<{ id: string }>();
-    
-    const stmts = showIDsResult.results.map(x => db.prepare(
+
+    let allStudents: Student[] = [];
+
+    if (showIDsResult.results.length) {
+      const stmts = showIDsResult.results.map(x => db.prepare(
         `
           SELECT id, name, main, castings, lesson, show_id FROM students
           WHERE show_id = ?
-        `
-      ).bind(x.id)
-    );
-
-    const studentsResult = await db.batch<Student>(stmts);
-    const allStudents = studentsResult.flatMap(x => x.results);
+        `,
+      ).bind(x.id),
+      );
+      const studentsResult = await db.batch<Student>(stmts);
+      allStudents = studentsResult.flatMap(x => x.results);
+    }
 
     return Response.json(allStudents);
   }
@@ -64,7 +67,7 @@ export default async function handleStudentsRequest(req: Request<unknown, Incomi
       `
         INSERT OR REPLACE INTO students (id, name, main, castings, lesson, show_id)
         VALUES (?, ?, ?, ?, ?, ?);
-      `
+      `,
     ).bind(x.id, x.name, x.main, JSON.stringify(x.castings), x.lesson, x.showID));
     await db.batch(stmts);
   

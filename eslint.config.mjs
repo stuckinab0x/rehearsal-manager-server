@@ -15,38 +15,23 @@ export default tseslint.config(
       parserOptions: {
         projectService: true,
         tsconfigRootDir: import.meta.dirname,
-      }
-    }
-  },
-  [{
+      },
+    },
     rules : {
       indent: ["error", 2],
-      '@stylistic/semi': "error",
+      "@stylistic/jsx-closing-bracket-location": "error",
+      "@stylistic/jsx-closing-tag-location": ["error", "line-aligned"],
+      "@stylistic/comma-dangle": ["error", "always-multiline"],
+      "@stylistic/object-curly-newline": ["error", { "multiline": true, "consistent": true }],
+      "@stylistic/object-property-newline": ["error", { "allowAllPropertiesOnSameLine": true }],
+      "@stylistic/semi": "error",
       '@typescript-eslint/no-unsafe-assignment': "off",
-    }
-  }]
+      "arrow-parens": ["error", "as-needed"],
+      "curly": ["error", "multi", "consistent"],
+      "max-len": ["error", {
+        code: 200,
+      }],
+      "template-curly-spacing": ["error", "always"],
+    },
+  },
 );
-
-// rules: {
-//         "arrow-parens": ["error", "as-needed"],
-//         curly: ["error", "multi", "consistent"],
-//         "nonblock-statement-body-position": "off",
-//         "max-len": ["error", {
-//             code: 200,
-//         }],
-//         "object-curly-newline": ["error", {
-//             multiline: true,
-//         }],
-//         "no-underscore-dangle": "off",
-//         "class-methods-use-this": "off",
-//         "max-classes-per-file": "off",
-//         "template-curly-spacing": ["error", "always"],
-//         "no-nested-ternary": "off",
-//         "implicit-arrow-linebreak": "off",
-//         "no-confusing-arrow": "off",
-//         "linebreak-style": "off",
-//         "lines-between-class-members": "off",
-//         "@typescript-eslint/lines-between-class-members": "off",
-//         "no-continue": "off",
-//         "semi": "error",
-//     },

@@ -31,7 +31,13 @@ const NewCastView: FC = () => {
   }, []);
 
   const potentialCastList = useMemo(() => {
-    return [...mapInputs(guitarInputs, 'Guitar'), ...mapInputs(bassInputs, 'Bass'), ...mapInputs(drumInputs, 'Drums'), ...mapInputs(keysInputs, 'Keys'), ...mapInputs(voxInputs, 'Vocals')].filter(x => x.name);
+    return [
+      ...mapInputs(guitarInputs, 'Guitar'),
+      ...mapInputs(bassInputs, 'Bass'),
+      ...mapInputs(drumInputs, 'Drums'),
+      ...mapInputs(keysInputs, 'Keys'),
+      ...mapInputs(voxInputs, 'Vocals'),
+    ].filter(x => x.name);
   }, [guitarInputs, bassInputs, drumInputs, keysInputs, voxInputs]);
 
   const buttonText = useMemo(() => {
@@ -72,9 +78,13 @@ const NewCastView: FC = () => {
         <h2>
           { currentEditingShow.name }: Cast Members
         </h2>
-        <h4><i>Add students to the cast list.<br />
-        Instrument groups will help with organization later<br/>
-        and don't affect song casting possibilities.</i></h4>
+        <h4>
+          <i>
+            Add students to the cast list.<br />
+            Instrument groups will help with organization later<br/>
+            and don't affect song casting possibilities.
+          </i>
+        </h4>
         { instrumentSectionProps.map(x => (<InstrumentSection key={ x.instName }>
           <InstrumentHeader>
             <h3>{ x.instName }</h3>
@@ -160,7 +170,7 @@ interface DoneButtonProps {
 
 const DoneButton = styled(AddButton)<DoneButtonProps>`
   margin-top: 20px;
-  ${ props => props.$disabled && 'pointer-events: none; opacity: 0.5;'}
+  ${ props => props.$disabled && 'pointer-events: none; opacity: 0.5;' }
   
   > h3 {
     font-size: 30px;
