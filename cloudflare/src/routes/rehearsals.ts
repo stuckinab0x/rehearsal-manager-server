@@ -7,9 +7,13 @@ export default async function handleRehearsalsRequest(req: Request<unknown, Inco
   const profileID = url.searchParams.get('profileID');
   const showID = url.searchParams.get('showID');
 
+  // Get Rehearsals For Given Show ID
   if (routePath === '' && req.method === 'GET' && showID) {
     const rehearsalsResult = await db.prepare(
-      "SELECT id, date, absent, were_run, todolist FROM rehearsals WHERE show_id = ?",
+      `
+        SELECT id, date, absent, were_run, todolist FROM rehearsals
+        WHERE show_id = ?
+      `,
     ).bind(showID).run<Rehearsal>();
     const rehearsals = rehearsalsResult.results.map<ParsedRehearsal>(x => ({
       id: x.id, date: x.date, absent: JSON.parse(x.absent), wereRun: JSON.parse(x.were_run), todoList: JSON.parse(x.todo_list),
@@ -17,11 +21,12 @@ export default async function handleRehearsalsRequest(req: Request<unknown, Inco
     return Response.json(rehearsals);
   }
 
-  // app
+  // App Routes //
 
-  if (routePath === '/full' && req.method === 'GET' && profileID) {
+  // Get All Rehearsals For Given Profile ID
+  if (routePath === '/app' && req.method === 'GET' && profileID) {
     const showIDsResult = await db.prepare(
-      "SELECT id FROM shows WHERE profile_id = ?",
+      'SELECT id FROM shows WHERE profile_id = ?',
     ).bind(profileID).run<{ id: string }>();
 
     let allRehearsals: Rehearsal[] = [];
@@ -29,9 +34,9 @@ export default async function handleRehearsalsRequest(req: Request<unknown, Inco
     if (showIDsResult.results.length) {
       const stmts = showIDsResult.results.map(x => db.prepare(
         `
-        SELECT id, date, absent, were_run, todo_list, show_id FROM rehearsals
-        WHERE show_id = ?
-      `,
+          SELECT id, date, absent, were_run, todo_list, show_id FROM rehearsals
+          WHERE show_id = ?
+        `,
       ).bind(x.id),
       );
 
@@ -42,7 +47,8 @@ export default async function handleRehearsalsRequest(req: Request<unknown, Inco
     return Response.json(allRehearsals);
   }
 
-  if (routePath === '/full' && req.method === 'PUT') {
+  // Save All Provided Rehearsals
+  if (routePath === '/app' && req.method === 'PUT') {
     const body = await req.json<ParsedShowRehearsal[]>();
   
     const stmts = body.map<D1PreparedStatement>(x => db.prepare(
@@ -53,9 +59,9 @@ export default async function handleRehearsalsRequest(req: Request<unknown, Inco
     ).bind(x.id, x.date, JSON.stringify(x.absent), JSON.stringify(x.wereRun), JSON.stringify(x.todoList), x.showID));
     await db.batch(stmts);
   
-    return new Response;
+    return new Response(null, { status: 204 });
   }
   
 
-  return new Response;
+  return new Response(null, { status: 400 });
 }

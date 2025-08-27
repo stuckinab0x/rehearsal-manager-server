@@ -1,4 +1,5 @@
 import { ParsedShowStudent, ParsedStudent, Student } from '../models/student';
+import { updateProfileTimestampFromShowID } from '../update-profile';
 
 export default async function handleStudentsRequest(req: Request<unknown, IncomingRequestCfProperties<unknown>>, db: D1Database): Promise<Response> {
   const url = new URL(req.url);
@@ -8,13 +9,18 @@ export default async function handleStudentsRequest(req: Request<unknown, Incomi
   const showID = url.searchParams.get('showID');
   const studentID = url.searchParams.get('studentID');
 
+  // Get All Students For Given Show ID
   if (routePath === '' && req.method === 'GET' && showID) {
     const studentsResult = await db.prepare(
-      "SELECT id, name, main, castings, lesson FROM students WHERE show_id = ?",
+      `
+        SELECT id, name, main, castings, lesson FROM students
+        WHERE show_id = ?
+      `,
     ).bind(showID).run<Student>();
     return Response.json(studentsResult.results.map(x => ({ ...x, castings: JSON.parse(x.castings) })));
   }
 
+  // Save Provided Students For Given Show ID
   if (routePath === '' && req.method === 'PUT' && showID) {
     const body = await req.json<ParsedStudent[]>();
     const stmts = body.map<D1PreparedStatement>(x => db.prepare(
@@ -24,23 +30,39 @@ export default async function handleStudentsRequest(req: Request<unknown, Incomi
       `,
     ).bind(x.id, x.name, x.main, JSON.stringify(x.castings), x.lesson || null, showID));
     await db.batch(stmts);
+
+    await updateProfileTimestampFromShowID(db, showID);
   
-    return new Response;
+    return new Response(null, { status: 204 });
   }
 
+  // Delete Student Using Given ID
   if (routePath === '' && req.method === 'DELETE' && studentID) {
+    const studentShowIDResult = await db.prepare(
+      `
+        SELECT show_id FROM students
+        WHERE id = ?;
+      `,
+    ).bind(studentID).run<{ show_id: string }>();
+
     await db.prepare(
       'DELETE FROM students WHERE id = ?',
     ).bind(studentID).run();
 
-    return new Response;
+    await updateProfileTimestampFromShowID(db, studentShowIDResult.results[0].show_id);
+
+    return new Response(null, { status: 204 });
   }
 
-  // app
+  // App Routes //
 
-  if (routePath === '/full' && req.method === 'GET' && profileID) {
+  // Get All Students For Given Profile ID
+  if (routePath === '/app' && req.method === 'GET' && profileID) {
     const showIDsResult = await db.prepare(
-      "SELECT id FROM shows WHERE profile_id = ?",
+      `
+        SELECT id FROM shows
+        WHERE profile_id = ?
+      `,
     ).bind(profileID).run<{ id: string }>();
 
     let allStudents: Student[] = [];
@@ -49,7 +71,7 @@ export default async function handleStudentsRequest(req: Request<unknown, Incomi
       const stmts = showIDsResult.results.map(x => db.prepare(
         `
           SELECT id, name, main, castings, lesson, show_id FROM students
-          WHERE show_id = ?
+          WHERE show_id = ?;
         `,
       ).bind(x.id),
       );
@@ -59,8 +81,9 @@ export default async function handleStudentsRequest(req: Request<unknown, Incomi
 
     return Response.json(allStudents);
   }
-
-  if (routePath === '/full' && req.method === 'PUT') {
+  
+  // Save All Provided Students
+  if (routePath === '/app' && req.method === 'PUT') {
     const body = await req.json<ParsedShowStudent[]>();
 
     const stmts = body.map<D1PreparedStatement>(x => db.prepare(
@@ -71,8 +94,8 @@ export default async function handleStudentsRequest(req: Request<unknown, Incomi
     ).bind(x.id, x.name, x.main, JSON.stringify(x.castings), x.lesson, x.showID));
     await db.batch(stmts);
   
-    return new Response;
+    return new Response(null, { status: 204 });
   }
 
-  return new Response;
+  return new Response(null, { status: 400 });
 }

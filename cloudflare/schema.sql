@@ -1,5 +1,3 @@
-DROP TABLE IF EXISTS config;
-
 DROP TABLE IF EXISTS profiles;
 CREATE TABLE profiles (
   id TEXT PRIMARY KEY,
