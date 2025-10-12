@@ -2,10 +2,6 @@
   "name": "rehearsal-manager-cloud",
   "author": "Ian Barr",
   "private": "true",
-  "scripts": {
-    "start:docker": "docker-compose up",
-    "start:docker:build": "docker-compose up --build"
-  },
   "workspaces": [
     "frontend",
     "cloudflare"

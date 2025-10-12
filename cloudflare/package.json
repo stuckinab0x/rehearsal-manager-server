@@ -4,7 +4,6 @@
 	"private": true,
 	"scripts": {
 		"deploy": "wrangler deploy",
-		"dev": "wrangler pages dev ../frontend/dist",
 		"start": "wrangler dev",
 		"start:host": "wrangler dev --ip 0.0.0.0",
 		"cf-typegen": "wrangler types",
